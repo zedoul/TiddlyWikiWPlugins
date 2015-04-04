@@ -521,7 +521,7 @@ noscript {display:none;} /* Fixes a feature in Firefox 1.5.0.2 where print previ
 </div>
 <!--POST-SHADOWAREA-->
 <div id="storeArea">
-<div title="CalendarPlugin" creator="zedoul" modifier="zedoul" created="201504041148" tags="systemConfig" alias="" changecount="1">
+<div title="CalendarPlugin" creator="zedoul" modifier="zedoul" created="201504041148" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |Name|CalendarPlugin|
 |Source|http://www.TiddlyTools.com/#CalendarPlugin|
@@ -919,7 +919,7 @@ function createCalendarDayRowsSingle(cal, year, mon)
 setStylesheet('.calendar, .calendar table, .calendar th, .calendar tr, .calendar td { text-align:center; } .calendar, .calendar a { margin:0px !important; padding:0px !important; }', 'calendarStyles');
 //}}}</pre>
 </div>
-<div title="DatePlugin" creator="zedoul" modifier="zedoul" created="201504041148" tags="systemConfig" alias="" changecount="1">
+<div title="DatePlugin" creator="zedoul" modifier="zedoul" created="201504041148" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |Name|[[DatePlugin]]|
 |Source|http://www.TiddlyTools.com/#DatePlugin|
@@ -1261,7 +1261,261 @@ function addRemindersToPopup(p,when,format)
 }
 //}}}</pre>
 </div>
-<div title="DisableWikiLinksPlugin" creator="zedoul" modifier="zedoul" created="201504041146" tags="systemConfig" alias="" changecount="1">
+<div title="DcTableOfContentsPlugin" creator="zedoul" modifier="zedoul" created="201504041209" modified="201504041210" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<pre>/***
+|Name|DcTableOfContentsPlugin|
+|Author|[[Doug Compton|http://www.zagware.com/tw/plugins.html#DcTableOfContentsPlugin]]|
+|Contributors|[[Lewcid|http://lewcid.org]], [[FND|http://devpad.tiddlyspot.com]], [[ELS|http://www.tiddlytools.com]]|
+|Source|[[FND's DevPad|http://devpad.tiddlyspot.com#DcTableOfContentsPlugin]]|
+|Version|0.4.1|
+|~CoreVersion|2.2|
+&lt;&lt;showtoc&gt;&gt;
+!Description
+This macro will insert a table of contents reflecting the headings that are used in a tiddler and will be automatically updated when you make changes.  Each item in the table of contents can be clicked on to jump to that heading.  It can be used either inside of select tiddlers or inside a system wide template.
+
+A parameter can be used to show the table of contents of a seperate tiddler, &amp;lt;&lt;showtoc tiddlerTitle&gt;&amp;gt;
+
+It will also place a link beside each header which will jump the screen to the top of the current tiddler.  This will only be displayed if the current tiddler is using the &amp;lt;&lt;showtoc&gt;&amp;gt; macro.
+
+The appearance of the table of contents and the link to jump to the top can be modified using CSS.  An example of this is given below.
+
+!Usage
+!!Only in select tiddlers
+The table of contents above is an example of how to use this macro in a tiddler.  Just insert &amp;lt;&lt;showtoc&gt;&amp;gt; in a tiddler on a line by itself.
+
+It can also display the table of contents of another tiddler by using the macro with a parameter, &amp;lt;&lt;showtoc tiddlerTitle&gt;&amp;gt;
+!!On every tiddler
+It can also be used in a template to have it show on every tiddler.  An example ViewTemplate is shown below.
+
+//{{{
+&lt;div class='toolbar' macro='toolbar -closeTiddler closeOthers +editTiddler permalink references jump'&gt;&lt;/div&gt;
+&lt;div class='title' macro='view title'&gt;&lt;/div&gt;
+&lt;div class='subtitle'&gt;Created &lt;span macro='view created date DD-MM-YY'&gt;&lt;/span&gt;, updated &lt;span macro='view modified date DD-MM-YY'&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;div class='tagging' macro='tagging'&gt;&lt;/div&gt;
+&lt;div class='tagged' macro='tags'&gt;&lt;/div&gt;
+&lt;div class=&quot;toc&quot; macro='showtoc'&gt;&lt;/div&gt;
+&lt;div class='viewer' macro='view text wikified'&gt;&lt;/div&gt;
+&lt;div class='tagClear'&gt;&lt;/div&gt;
+//}}}
+
+!Examples
+If you had a tiddler with the following headings:
+{{{
+!Heading1a
+!!Heading2a
+!!Heading2b
+!!!Heading3
+!Heading1b
+}}}
+this table of contents would be automatically generated:
+* Heading1a
+** Heading2a
+** Heading2b
+*** Heading3
+* Heading1b
+!Changing how it looks
+To modifiy the appearance, you can use CSS similiar to the below.
+//{{{
+.dcTOC ul {
+	color: red;
+	list-style-type: lower-roman;
+}
+.dcTOC a {
+	color: green;
+	border: none;
+}
+
+.dcTOC a:hover {
+	background: white;
+	border: solid 1px;
+}
+.dcTOCTop {
+	font-size: 2em;
+	color: green;
+}
+//}}}
+
+!Revision History
+!!v0.1.0 (2006-04-07)
+* initial release
+!!v0.2.0 (2006-04-10)
+* added the [top] link on headings to jump to the top of the current tiddler
+* appearance can now be customized using CSS
+* all event handlers now return false
+!!v0.3.0 (2006-04-12)
+* added the ability to show the table of contents of a seperate tiddler
+* fixed an error when a heading had a ~WikiLink in it
+!!v0.3.5 (2007-10-16)
+* updated formatter object for compatibility with TiddlyWiki v2.2 (by Lewcid)
+!!v0.4.0 (2007-11-14)
+* added toggle button for collapsing/expanding table of contents element
+* refactored documentation
+!To Do
+* code sanitizing/rewrite
+* documentation refactoring
+* use shadow tiddler for styles
+!Code
+***/
+//{{{
+
+version.extensions.DcTableOfContentsPlugin= {
+	major: 0, minor: 4, revision: 0,
+	type: &quot;macro&quot;,
+	source: &quot;http://devpad.tiddlyspot.com#DcTableOfContentsPlugin&quot;
+};
+
+// Replace heading formatter with our own
+for (var n=0; n&lt;config.formatters.length; n++) {
+	var format = config.formatters[n];
+	if (format.name == 'heading') {
+		format.handler = function(w) {
+			// following two lines is the default handler
+			var e = createTiddlyElement(w.output, &quot;h&quot; + w.matchLength);
+			w.subWikifyTerm(e, this.termRegExp); //updated for TW 2.2+
+
+			// Only show [top] if current tiddler is using showtoc
+			if (w.tiddler &amp;&amp; w.tiddler.isTOCInTiddler == 1) {
+				// Create a container for the default CSS values
+				var c = createTiddlyElement(e, &quot;div&quot;);
+				c.setAttribute(&quot;style&quot;, &quot;font-size: 0.5em; color: blue;&quot;);
+				// Create the link to jump to the top
+				createTiddlyButton(c, &quot; [top]&quot;, &quot;Go to top of tiddler&quot;, window.scrollToTop, &quot;dcTOCTop&quot;, null, null);
+			}
+		}
+		break;
+	}
+}
+
+config.macros.showtoc = {
+	handler: function(place, macroName, params, wikifier, paramString, tiddler) {
+		var text = &quot;&quot;;
+		var title = &quot;&quot;;
+		var myTiddler = null;
+
+		// Did they pass in a tiddler?
+		if (params.length) {
+			title = params[0];
+			myTiddler = store.getTiddler(title);
+		} else {
+			myTiddler = tiddler;
+		}
+
+		if (myTiddler == null) {
+			wikify(&quot;ERROR: Could not find &quot; + title, place);
+			return;
+		}
+
+		var lines = myTiddler .text.split(&quot;\n&quot;);
+		myTiddler.isTOCInTiddler = 1;
+
+		// Create a parent container so the TOC can be customized using CSS
+		var r = createTiddlyElement(place, &quot;div&quot;, null, &quot;dcTOC&quot;);
+		// create toggle button
+		createTiddlyButton(r, &quot;Table of Contents&quot;, &quot;show/collapse table of contents&quot;,
+			function() { config.macros.showtoc.toggleElement(this.nextSibling); },
+			&quot;toggleButton&quot;)
+		// Create a container so the TOC can be customized using CSS
+		var c = createTiddlyElement(r, &quot;div&quot;);
+
+		if (lines != null) {
+			for (var x=0; x&lt;lines.length; x++) {
+				var line = lines[x];
+				if (line.substr(0,1) == &quot;!&quot;) {
+					// Find first non ! char
+					for (var i=0; i&lt;line.length; i++) {
+						if (line.substr(i, 1) != &quot;!&quot;) {
+							break;
+						}
+					}
+					var desc = line.substring(i);
+					// Remove WikiLinks
+					desc = desc.replace(/\[\[/g, &quot;&quot;);
+					desc = desc.replace(/\]\]/g, &quot;&quot;);
+
+					text += line.substr(0, i).replace(/[!]/g, '*');
+					text += '&lt;html&gt;&lt;a href=&quot;javascript:;&quot; onClick=&quot;window.scrollToHeading(\'' + title + '\', \'' + desc+ '\', event)&quot;&gt;' + desc+ '&lt;/a&gt;&lt;/html&gt;\n';
+				}
+			}
+		}
+		wikify(text, c);
+	}
+}
+
+config.macros.showtoc.toggleElement = function(e) {
+	if(e) {
+		if(e.style.display != &quot;none&quot;) {
+			e.style.display = &quot;none&quot;;
+		} else {
+			e.style.display = &quot;&quot;;
+		}
+	}
+};
+
+window.scrollToTop = function(evt) {
+	if (! evt)
+		var evt = window.event;
+
+	var target = resolveTarget(evt);
+	var tiddler = story.findContainingTiddler(target);
+
+	if (! tiddler)
+		return false;
+
+	window.scrollTo(0, ensureVisible(tiddler));
+
+	return false;
+};
+
+window.scrollToHeading = function(title, anchorName, evt) {
+	var tiddler = null;
+
+	if (! evt)
+		var evt = window.event;
+
+	if (title) {
+		story.displayTiddler(store.getTiddler(title), title, null, false);
+		tiddler = document.getElementById(story.idPrefix + title);
+	} else {
+		var target = resolveTarget(evt);
+		tiddler = story.findContainingTiddler(target);
+	}
+
+	if (tiddler == null)
+		return false;
+	
+	var children1 = tiddler.getElementsByTagName(&quot;h1&quot;);
+	var children2 = tiddler.getElementsByTagName(&quot;h2&quot;);
+	var children3 = tiddler.getElementsByTagName(&quot;h3&quot;);
+	var children4 = tiddler.getElementsByTagName(&quot;h4&quot;);
+	var children5 = tiddler.getElementsByTagName(&quot;h5&quot;);
+
+	var children = new Array();
+	children = children.concat(children1, children2, children3, children4, children5);
+
+	for (var i = 0; i &lt; children.length; i++) {
+		for (var j = 0; j &lt; children[i].length; j++) {
+			var heading = children[i][j].innerHTML;
+
+			// Remove all HTML tags
+			while (heading.indexOf(&quot;&lt;&quot;) &gt;= 0) {
+				heading = heading.substring(0, heading.indexOf(&quot;&lt;&quot;)) + heading.substring(heading.indexOf(&quot;&gt;&quot;) + 1);
+			}
+
+			// Cut off the code added in showtoc for TOP
+			heading = heading.substr(0, heading.length-6);
+
+			if (heading == anchorName) {
+				var y = findPosY(children[i][j]);
+				window.scrollTo(0,y);
+				return false;
+			}
+		}
+	}
+	return false
+};
+//}}}</pre>
+</div>
+<div title="DisableWikiLinksPlugin" creator="zedoul" modifier="zedoul" created="201504041146" modified="201504041206" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |Name|DisableWikiLinksPlugin|
 |Source|http://www.TiddlyTools.com/#DisableWikiLinksPlugin|
@@ -1363,7 +1617,23 @@ Tiddler.prototype.changed = function()
 };
 //}}}</pre>
 </div>
-<div title="FoldHeadingsPlugin" creator="zedoul" modifier="zedoul" created="201504041142" tags="systemConfig" changecount="1">
+<div title="DiscussPlugin" creator="zedoul" modifier="zedoul" created="201504041159" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<pre>/***
+|''Name''|DiscussPlugin|
+|''Author''|[[Tobias Beer|http://tobibeer.tiddlyspace.com]]|
+|''Description''|outputs the (modified) html representation with disqus in an iframe for a tiddler on TiddlySpace|
+|''Source''|https://raw.github.com/tobibeer/TiddlyWikiPlugins/master/plugins/DiscussPlugin.min.js|
+|''Documentation''|http://discuss.tiddlyspace.com|
+|''Version''|0.9.3 (2013-09-06)|
+|''~CoreVersion''|2.5.2|
+|''Requires''|TiddlySpace / TiddlyWeb|
+|''License''|Creative Commons 3.0|
+***/
+// /%
+(function(e){config.macros.discuss={config:{always:false,tplSlider:'Show comments for \'\'&quot;&quot;&quot;%0&quot;&quot;&quot;\'\'  &quot;&quot;&quot;//&quot;&quot;&quot; &lt;&lt;discuss count [[%0]]&gt;&gt;',tipSlider:&quot;Click to show comments for %0...&quot;,url:&quot;&quot;,header:&quot;{{discuss_header{\nLeave a comment at tiddler [[%0]]...\n}}}&quot;,css:{width:&quot;100%&quot;,height:&quot;400px&quot;,border:&quot;0&quot;,marginTop:&quot;1em&quot;}},handler:function(t,n,r,i,s,o){var u,a,f,l=this.config,c=o?o.title:&quot;&quot;,h=s.parseParams(&quot;anon&quot;,null,true),p=getParam(h,&quot;always&quot;,l.always),d=store.getTiddlerText(getParam(h,&quot;template&quot;,&quot;&quot;));if(r[0]==&quot;count&quot;){this.count(r[1],t);return}if(!c||!store.getTiddler(c))return;a=e('&lt;div class=&quot;discuss_panel&quot;/&gt;').attr({url:getParam(h,&quot;url&quot;,l.url)+&quot;/&quot;+encodeURIComponent(c),title:c}).css(&quot;marginTop&quot;,&quot;1em&quot;).appendTo(e(t));if(p){wikify(l.header.format([c]),a[0]);this.render(a[0])}else{u=e(&quot;&lt;div/&gt;&lt;/div&gt;&quot;).attr({&quot;class&quot;:&quot;button discuss_button&quot;,title:l.tipSlider.format([c])}).css({cursor:&quot;pointer&quot;,padding:&quot;0.5em 1%&quot;,width:&quot;98%&quot;}).appendTo(a).click(this.show);wikify((d?d:l.tplSlider).format([c]),u[0])}},render:function(t,n){var r=config.macros.discuss.config,i=e(t).closest(&quot;.discuss_panel&quot;);e(&quot;&lt;iframe/&gt;&quot;).hide().css(r.css).attr({src:i.attr(&quot;url&quot;)}).appendTo(i).slideDown()},show:function(t){console.log(&quot;click&quot;);var n=e(this),r=e(resolveTarget(t||window.event));if(!r.is(&quot;.discuss_button, .discuss_count&quot;)&amp;&amp;r.is(&quot;a&quot;))return true;config.macros.discuss.render(n[0],true);n.remove();return false},count:function(t,n){config.extensions.tiddlyweb.getStatus(function(){var r,i=config.extensions.tiddlyspace.currentSpace.name,s=config.extensions.tiddlyspace.getHost(config.extensions.tiddlyweb.status.server_host,i);e(&quot;&lt;a/&gt;&quot;).attr({&quot;class&quot;:&quot;discuss_count&quot;,&quot;data-disqus-identifier&quot;:t,href:s+&quot;/&quot;+encodeURIComponent(t)+&quot;#disqus_thread&quot;}).appendTo(n);r=document.createElement(&quot;script&quot;);r.async=true;r.type=&quot;text/javascript&quot;;r.src=&quot;http://&quot;+i+&quot;-tiddlyspace.disqus.com/count.js&quot;;console.log(r);(document.getElementsByTagName(&quot;HEAD&quot;)[0]||document.getElementsByTagName(&quot;BODY&quot;)[0]).appendChild(r)})}}})(jQuery)
+// %/</pre>
+</div>
+<div title="FoldHeadingsPlugin" creator="zedoul" modifier="zedoul" created="201504041142" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
 <pre>/***
 |Name|FoldHeadingsPlugin|
 |Source|http://www.TiddlyTools.com/#FoldHeadingsPlugin|
@@ -1477,7 +1747,7 @@ Story.prototype.scrollToSection=function(title,section) {
 //}}}
 // //&lt;&lt;foldHeadings closed&gt;&gt;</pre>
 </div>
-<div title="FootnotesPlugin" creator="zedoul" modifier="zedoul" created="201504041143" tags="systemConfig" changecount="1">
+<div title="FootnotesPlugin" creator="zedoul" modifier="zedoul" created="201504041143" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
 <pre>/***
 |''Name:''|FootnotesPlugin|
 |''Description:''|Create automated tiddler footnotes.|
@@ -1561,7 +1831,21 @@ setStylesheet(
 //!END-PLUGIN-CODE
 // %/</pre>
 </div>
-<div title="GotoPlugin" creator="zedoul" modifier="zedoul" created="201504041149" tags="systemConfig" alias="" changecount="1">
+<div title="GettingStarted" creator="zedoul" modifier="zedoul" created="201504041202" modified="201504041209" alias="" changecount="7">
+<pre>To get started with this blank [[TiddlyWiki]], you'll need to modify the following tiddlers:
+* [[SiteTitle]] &amp; [[SiteSubtitle]]: The title and subtitle of the site, as shown above (after saving, they will also appear in the browser title bar)
+* [[MainMenu]]: The menu (usually on the left)
+* [[DefaultTiddlers]]: Contains the names of the tiddlers that you want to appear when the TiddlyWiki is opened
+* [[ViewTemplate]]
+* [[StyleSheet]]
+* [[SideBarTabs]]
+* [[SideBarOptions]]
+* [[PageTemplate]]
+* [[DefaultTiddlers]]
+You'll also need to enter your username for signing your edits: &lt;&lt;option txtUserName&gt;&gt;
+</pre>
+</div>
+<div title="GotoPlugin" creator="zedoul" modifier="zedoul" created="201504041149" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |Name|GotoPlugin|
 |Source|http://www.TiddlyTools.com/#GotoPlugin|
@@ -1759,7 +2043,34 @@ config.macros.gotoTiddler= {
 }
 //}}}</pre>
 </div>
-<div title="ImageSizePlugin" creator="zedoul" modifier="zedoul" created="201504041145" tags="systemConfig" alias="" changecount="1">
+<div title="HtmlCss" creator="zedoul" modifier="zedoul" created="201504041201" tags="excludeLists excludeSearch" alias="" changecount="1">
+<pre>/*{{{*/
+
+/* hide all unwanted things */
+#app-picker,
+.reply-btn,
+.bs-popup,
+#header,
+.meta,
+.main,
+#footer{
+    display:none !important;
+}
+
+/* no backgrounds either */
+html,
+#container {
+    background: none !important;
+}
+
+/*}}}*/</pre>
+</div>
+<div title="HtmlJavascript" creator="zedoul" modifier="zedoul" created="201504041200" tags="excludeLists excludeSearch" alias="" changecount="1">
+<pre>/bags/common/tiddlers/jquery.js
+http://htmljs.tiddlyspace.com/htmljs-disqus
+</pre>
+</div>
+<div title="ImageSizePlugin" creator="zedoul" modifier="zedoul" created="201504041145" modified="201504041206" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |Name|ImageSizePlugin|
 |Source|http://www.TiddlyTools.com/#ImageSizePlugin|
@@ -1935,7 +2246,7 @@ config.formatterHelpers.addStretchHandlers=function(e,stretchW,stretchH) {
 }
 //}}}</pre>
 </div>
-<div title="InlineJavascriptPlugin" creator="zedoul" modifier="zedoul" created="201504041142" tags="systemConfig" changecount="1">
+<div title="InlineJavascriptPlugin" creator="zedoul" modifier="zedoul" created="201504041142" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
 <pre>/***
 |Name|InlineJavascriptPlugin|
 |Source|http://www.TiddlyTools.com/#InlineJavascriptPlugin|
@@ -2036,7 +2347,7 @@ if (typeof(wikifyPlainText)==&quot;undefined&quot;) window.wikifyPlainText=funct
 if (typeof($)=='undefined') { function $(id) { return document.getElementById(id.replace(/^#/,'')); } }
 //}}}</pre>
 </div>
-<div title="PageTemplate" creator="zedoul" modifier="zedoul" created="201504041142" changecount="1">
+<div title="PageTemplate" creator="zedoul" modifier="zedoul" created="201504041142" modified="201504041205" tags="excludeLists excludeSearch" changecount="2" alias="">
 <pre>&lt;!--{{{--&gt;
 
 &lt;div id='topMenu' refresh='content' tiddler='MainMenu'&gt;&lt;/div&gt;
@@ -2051,7 +2362,7 @@ if (typeof($)=='undefined') { function $(id) { return document.getElementById(id
 &lt;/div&gt;
 &lt;!--}}}--&gt;</pre>
 </div>
-<div title="PluginMathJax" creator="zedoul" modifier="zedoul" created="201504041145" tags="systemConfig" alias="" changecount="1">
+<div title="PluginMathJax" creator="zedoul" modifier="zedoul" created="201504041145" modified="201504041206" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |''Name''|PluginMathJax|
 |''Description''|Displays TeX math using MathJax|
@@ -2300,14 +2611,14 @@ if(!version.extensions.PluginMathJax) {
 //}}}
 </pre>
 </div>
-<div title="SideBarTabs" creator="zedoul" modifier="zedoul" created="201504041146" alias="" changecount="1">
+<div title="SideBarTabs" creator="zedoul" modifier="zedoul" created="201504041146" modified="201504041206" tags="excludeLists excludeSearch" alias="" changecount="2">
 <pre>{{small{
 	&lt;&lt;tabs txtMainTab
 		None 'TableOfContentsPlugin enhanced listbox' SideBarTabs##Listbox
 		Timeline Timeline TabTimeline
 &gt;&gt;</pre>
 </div>
-<div title="StyleSheet" creator="zedoul" modifier="zedoul" created="201504041140" modified="201504041141" tags="BlackicityTheme" changecount="2">
+<div title="StyleSheet" creator="zedoul" modifier="zedoul" created="201504041140" modified="201504041205" tags="BlackicityTheme excludeLists excludeSearch" changecount="3" alias="">
 <pre>/*{{{*/
 /*Blackicity Theme for TiddlyWiki*/
 /*Design and CSS by Saq Imtiaz*/
@@ -2582,7 +2893,7 @@ h3 {font-size: 16px;}
 h4 {font-size: 14px;}
 /*}}}*/</pre>
 </div>
-<div title="TiddlerAliasPlugin" creator="zedoul" modifier="zedoul" created="201504041144" tags="systemConfig" changecount="1">
+<div title="TiddlerAliasPlugin" creator="zedoul" modifier="zedoul" created="201504041144" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
 <pre>/***
 |''Name:''|TiddlerAliasPlugin|
 |''Version:''|1.0.0 BETA 4 (2009-03-30)|
@@ -2805,7 +3116,7 @@ DAMAGE.
 
 //}}}</pre>
 </div>
-<div title="TiddlersBarPlugin" creator="zedoul" modifier="zedoul" created="201504041144" tags="systemConfig" changecount="1">
+<div title="TiddlersBarPlugin" creator="zedoul" modifier="zedoul" created="201504041144" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
 <pre>/***
 |''Name:''|TiddlersBarPlugin|
 |''Description:''|Provides browser-like tabs to switch between tiddlers.|
@@ -3098,7 +3409,19 @@ config.refreshers.none = function(){return true}
 })(jQuery);
 //}}}</pre>
 </div>
-<div title="WikiBar" creator="zedoul" modifier="zedoul" created="201504041147" tags="systemConfig" alias="" changecount="1">
+<div title="ViewTemplate" creator="zedoul" modifier="zedoul" created="201504041203" modified="201504041207" tags="excludeLists excludeSearch" alias="" changecount="3">
+<pre>&lt;!--{{{--&gt;
+&lt;div class='toolbar' role='navigation' macro='toolbar [[ToolbarCommands::ViewToolbar]]'&gt;&lt;/div&gt;
+&lt;div class='title' macro='view title'&gt;&lt;/div&gt;
+&lt;div class='subtitle'&gt;&lt;span macro='view modifier link'&gt;&lt;/span&gt;, &lt;span macro='view modified date'&gt;&lt;/span&gt; (&lt;span macro='message views.wikified.createdPrompt'&gt;&lt;/span&gt; &lt;span macro='view created date'&gt;&lt;/span&gt;)&lt;/div&gt;
+&lt;div class='tagging' macro='tagging'&gt;&lt;/div&gt;
+&lt;div class='tagged' macro='tags'&gt;&lt;/div&gt;
+&lt;div class='viewer' macro='view text wikified'&gt;&lt;/div&gt;
+&lt;div class='tagClear'&gt;&lt;/div&gt;
+&lt;!--}}}--&gt;
+</pre>
+</div>
+<div title="WikiBar" creator="zedoul" modifier="zedoul" created="201504041147" modified="201504041206" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |''Name:''|WikiBar|
 |''Version:''|2.0.0 beta3|
