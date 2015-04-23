@@ -521,7 +521,7 @@ noscript {display:none;} /* Fixes a feature in Firefox 1.5.0.2 where print previ
 </div>
 <!--POST-SHADOWAREA-->
 <div id="storeArea">
-<div title="CalendarPlugin" creator="zedoul" modifier="zedoul" created="201504041148" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<div title="CalendarPlugin" creator="YourName" modifier="YourName" created="201504041148" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |Name|CalendarPlugin|
 |Source|http://www.TiddlyTools.com/#CalendarPlugin|
@@ -919,7 +919,112 @@ function createCalendarDayRowsSingle(cal, year, mon)
 setStylesheet('.calendar, .calendar table, .calendar th, .calendar tr, .calendar td { text-align:center; } .calendar, .calendar a { margin:0px !important; padding:0px !important; }', 'calendarStyles');
 //}}}</pre>
 </div>
-<div title="DatePlugin" creator="zedoul" modifier="zedoul" created="201504041148" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<div title="DataTiddlerPlugin" creator="YourName" modifier="YourName" created="201504231556" modified="201504231600" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<pre>/***
+|''Name:''|DataTiddlerPlugin|
+|''Version:''|1.0.7 (2012-04-19)|
+|''Summary:''|Enhance your tiddlers with structured data (such as strings, booleans, numbers, or even arrays and compound objects) that can be easily accessed and modified through named fields (in JavaScript code).|
+|''Source:''|http://tiddlywiki.abego-software.de/#DataTiddlerPlugin|
+|''Twitter:''|[[@abego|https://twitter.com/#!/abego]]|
+|''Author:''|UdoBorkowski (ub [at] abego-software [dot] de)|
+|''License:''|[[BSD open source license|http://www.abego-software.de/legal/apl-v10.html]]|
+!Description
+Enhance your tiddlers with structured data (such as strings, booleans, numbers, or even arrays and compound objects) that can be easily accessed and modified through named fields (in JavaScript code).
+
+Such tiddler data can be used in various applications. E.g. you may create tables that collect data from various tiddlers. 
+
+''//Example: &quot;Table with all December Expenses&quot;//''
+{{{
+&lt;&lt;forEachTiddler
+    where
+        'tiddler.tags.contains(&quot;expense&quot;) &amp;&amp; tiddler.data(&quot;month&quot;) == &quot;Dec&quot;'
+    write
+        '&quot;|[[&quot;+tiddler.title+&quot;]]|&quot;+tiddler.data(&quot;descr&quot;)+&quot;| &quot;+tiddler.data(&quot;amount&quot;)+&quot;|\n&quot;'
+&gt;&gt;
+}}}
+//(This assumes that expenses are stored in tiddlers tagged with &quot;expense&quot;.)//
+&lt;&lt;forEachTiddler
+    where
+        'tiddler.tags.contains(&quot;expense&quot;) &amp;&amp; tiddler.data(&quot;month&quot;) == &quot;Dec&quot;'
+    write
+        '&quot;|[[&quot;+tiddler.title+&quot;]]|&quot;+tiddler.data(&quot;descr&quot;)+&quot;| &quot;+tiddler.data(&quot;amount&quot;)+&quot;|\n&quot;'
+&gt;&gt;
+For other examples see DataTiddlerExamples.
+
+
+
+
+''Access and Modify Tiddler Data''
+
+You can &quot;attach&quot; data to every tiddler by assigning a JavaScript value (such as a string, boolean, number, or even arrays and compound objects) to named fields. 
+
+These values can be accessed and modified through the following Tiddler methods:
+|!Method|!Example|!Description|
+|{{{data(field)}}}|{{{t.data(&quot;age&quot;)}}}|Returns the value of the given data field of the tiddler. When no such field is defined or its value is undefined {{{undefined}}} is returned.|
+|{{{data(field,defaultValue)}}}|{{{t.data(&quot;isVIP&quot;,false)}}}|Returns the value of the given data field of the tiddler. When no such field is defined or its value is undefined the defaultValue is returned.|
+|{{{data()}}}|{{{t.data()}}}|Returns the data object of the tiddler, with a property for every field. The properties of the returned data object may only be read and not be modified. To modify the data use DataTiddler.setData(...) or the corresponding Tiddler method.|
+|{{{setData(field,value)}}}|{{{t.setData(&quot;age&quot;,42)}}}|Sets the value of the given data field of the tiddler to the value. When the value is {{{undefined}}} the field is removed.|
+|{{{setData(field,value,defaultValue)}}}|{{{t.setData(&quot;isVIP&quot;,flag,false)}}}|Sets the value of the given data field of the tiddler to the value. When the value is equal to the defaultValue no value is set (and the field is removed).|
+
+Alternatively you may use the following functions to access and modify the data. In this case the tiddler argument is either a tiddler or the name of a tiddler.
+|!Method|!Description|
+|{{{DataTiddler.getData(tiddler,field)}}}|Returns the value of the given data field of the tiddler. When no such field is defined or its value is undefined {{{undefined}}} is returned.|
+|{{{DataTiddler.getData(tiddler,field,defaultValue)}}}|Returns the value of the given data field of the tiddler. When no such field is defined or its value is undefined the defaultValue is returned.|
+|{{{DataTiddler.getDataObject(tiddler)}}}|Returns the data object of the tiddler, with a property for every field. The properties of the returned data object may only be read and not be modified. To modify the data use DataTiddler.setData(...) or the corresponding Tiddler method.|
+|{{{DataTiddler.setData(tiddler,field,value)}}}|Sets the value of the given data field of the tiddler to the value. When the value is {{{undefined}}} the field is removed.|
+|{{{DataTiddler.setData(tiddler,field,value,defaultValue)}}}|Sets the value of the given data field of the tiddler to the value. When the value is equal to the defaultValue no value is set (and the field is removed).|
+//(For details on the various functions see the detailed comments in the source code.)//
+
+
+''Data Representation in a Tiddler''
+
+The data of a tiddler is stored as plain text in the tiddler's content/text, inside a &quot;data&quot; section that is framed by a {{{&lt;data&gt;...&lt;/data&gt;}}} block. Inside the data section the information is stored in the [[JSON format|http://www.crockford.com/JSON/index.html]]. 
+
+//''Data Section Example:''//
+{{{
+&lt;data&gt;{&quot;isVIP&quot;:true,&quot;user&quot;:&quot;John Brown&quot;,&quot;age&quot;:34}&lt;/data&gt;
+}}}
+
+The data section is not displayed when viewing the tiddler (see also &quot;The showData Macro&quot;).
+
+Beside the data section a tiddler may have all kind of other content.
+
+Typically you will not access the data section text directly but use the methods given above. Nevertheless you may retrieve the text of the data section's content through the {{{DataTiddler.getDataText(tiddler)}}} function.
+
+
+''Saving Changes''
+
+The &quot;setData&quot; methods respect the &quot;ForceMinorUpdate&quot; and &quot;AutoSave&quot; configuration values. I.e. when &quot;ForceMinorUpdate&quot; is true changing a value using setData will not affect the &quot;modifier&quot; and &quot;modified&quot; attributes. With &quot;AutoSave&quot; set to true every setData will directly save the changes after a setData.
+
+
+''Notifications''
+
+No notifications are sent when a tiddler's data value is changed through the &quot;setData&quot; methods. 
+
+''Escape Data Section''
+In case that you want to use the text {{{&lt;data&gt;}}} or {{{&lt;/data&gt;}}} in a tiddler text you must prefix the text with a tilde ('~'). Otherwise it may be wrongly considered as the data section. The tiddler text {{{~&lt;data&gt;}}} is displayed as {{{&lt;data&gt;}}}.
+
+
+''The showData Macro''
+
+By default the data of a tiddler (that is stored in the {{{&lt;data&gt;...&lt;/data&gt;}}} section of the tiddler) is not displayed. If you want to display this data you may used the {{{&lt;&lt;showData ...&gt;&gt;}}} macro:
+
+''Syntax:'' 
+|&gt;|{{{&lt;&lt;}}}''showData '' [''JSON''] [//tiddlerName//] {{{&gt;&gt;}}}|
+|''JSON''|By default the data is rendered as a table with a &quot;Name&quot; and &quot;Value&quot; column. When defining ''JSON'' the data is rendered in JSON format|
+|//tiddlerName//|Defines the tiddler holding the data to be displayed. When no tiddler is given the tiddler containing the showData macro is used. When the tiddler name contains spaces you must quote the name (or use the {{{[[...]]}}} syntax.)|
+|&gt;|~~Syntax formatting: Keywords in ''bold'', optional parts in [...]. 'or' means that exactly one of the two alternatives must exist.~~|
+!Source Code
+***/
+/***
+This plugin's source code is compressed (and hidden). 
+Use this [[link|http://tiddlywiki.abego-software.de/archive/DataTiddlerPlugin/1.0.7/DataTiddlerPlugin-1.0.7-src.js]] to get the readable source code.
+***/
+///%
+if(!version.extensions.DataTiddlerPlugin){version.extensions.DataTiddlerPlugin={major:1,minor:0,revision:7,date:new Date(2012,3,19),type:&quot;plugin&quot;,source:&quot;http://tiddlywiki.abego-software.de/#DataTiddlerPlugin&quot;};if(!window.story){window.story=window}if(!TiddlyWiki.prototype.getTiddler){TiddlyWiki.prototype.getTiddler=function(b){var a=this.tiddlers[b];return(a!==undefined&amp;&amp;a instanceof Tiddler)?a:null}}function DataTiddler(){}DataTiddler={stringify:null,parse:null};window.DataTiddler=DataTiddler;DataTiddler.getData=function(c,d,a){var b=(typeof c==&quot;string&quot;)?store.getTiddler(c):c;if(!(b instanceof Tiddler)){throw&quot;Tiddler expected. Got &quot;+c}return DataTiddler.getTiddlerDataValue(b,d,a)};DataTiddler.setData=function(c,e,d,a){var b=(typeof c==&quot;string&quot;)?store.getTiddler(c):c;if(!(b instanceof Tiddler)){throw&quot;Tiddler expected. Got &quot;+c+&quot;(&quot;+b+&quot;)&quot;}DataTiddler.setTiddlerDataValue(b,e,d,a)};DataTiddler.getDataObject=function(b){var a=(typeof b==&quot;string&quot;)?store.getTiddler(b):b;if(!(a instanceof Tiddler)){throw&quot;Tiddler expected. Got &quot;+b}return DataTiddler.getTiddlerDataObject(a)};DataTiddler.getDataText=function(b){var a=(typeof b==&quot;string&quot;)?store.getTiddler(b):b;if(!(a instanceof Tiddler)){throw&quot;Tiddler expected. Got &quot;+b}return DataTiddler.readDataSectionText(a)};DataTiddler.extendJSONError=function(a){if(a.name==&quot;JSONError&quot;){a.toString=function(){return a.name+&quot;: &quot;+a.message+&quot; (&quot;+a.text+&quot;)&quot;}}return a};DataTiddler.getTiddlerDataObject=function(a){if(a.dataObject===undefined){var b=DataTiddler.readData(a);a.dataObject=(b)?b:{}}return a.dataObject};DataTiddler.getTiddlerDataValue=function(b,d,a){var c=DataTiddler.getTiddlerDataObject(b)[d];return(c===undefined)?a:c};DataTiddler.setTiddlerDataValue=function(c,f,e,a){var d=DataTiddler.getTiddlerDataObject(c);var b=d[f];if(e==a){if(b!==undefined){delete d[f];DataTiddler.save(c)}return}d[f]=e;DataTiddler.save(c)};DataTiddler.readDataSectionText=function(a){var b=DataTiddler.getDataTiddlerMatches(a);if(b===null||!b[2]){return null}return b[2]};DataTiddler.readData=function(b){var c=DataTiddler.readDataSectionText(b);try{return c?DataTiddler.parse(c):null}catch(a){throw DataTiddler.extendJSONError(a)}};DataTiddler.getDataTextOfTiddler=function(a){var b=DataTiddler.getTiddlerDataObject(a);return DataTiddler.stringify(b)};DataTiddler.indexOfNonEscapedText=function(c,a,d){var b=c.indexOf(a,d);while((b&gt;0)&amp;&amp;(c[b-1]==&quot;~&quot;)){b=c.indexOf(a,b+1)}return b};DataTiddler.getDataSectionInfo=function(e){var a=&quot;&lt;data&gt;{&quot;;var f=&quot;}&lt;/data&gt;&quot;;var d=DataTiddler.indexOfNonEscapedText(e,a,0);if(d&lt;0){return null}var c=e.indexOf(f,d);if(c&lt;0){return null}var b;while((b=e.indexOf(f,c+1))&gt;=0){c=b}return{prefixEnd:d,dataStart:d+(a.length)-1,dataEnd:c,suffixStart:c+(f.length)}};DataTiddler.getDataTiddlerMatches=function(a){var f=a.text;var e=DataTiddler.getDataSectionInfo(f);if(!e){return null}var c=f.substr(0,e.prefixEnd);var b=f.substr(e.dataStart,e.dataEnd-e.dataStart+1);var d=f.substr(e.suffixStart);return[f,c,b,d]};DataTiddler.save=function(a){var e=DataTiddler.getDataTiddlerMatches(a);var d;var f;if(e===null){d=a.text;f=&quot;&quot;}else{d=e[1];f=e[3]}var b=DataTiddler.getDataTextOfTiddler(a);var c=(b!==null)?d+&quot;&lt;data&gt;&quot;+b+&quot;&lt;/data&gt;&quot;+f:d+f;if(c!=a.text){a.isDataTiddlerChange=true;a.set(a.title,c,config.options.txtUserName,config.options.chkForceMinorUpdate?undefined:new Date(),a.tags);delete a.isDataTiddlerChange;store.dirty=true;if(config.options.chkAutoSave){saveChanges()}}};DataTiddler.MyTiddlerChangedFunction=function(){if(this.dataObject&amp;&amp;!this.isDataTiddlerChange){delete this.dataObject}DataTiddler.originalTiddlerChangedFunction.apply(this,arguments)};config.formatters.push({name:&quot;data-escape&quot;,match:&quot;~&lt;\\/?data&gt;&quot;,handler:function(a){a.outputText(a.output,a.matchStart+1,a.nextMatch)}});config.formatters.push({name:&quot;data&quot;,match:&quot;&lt;data&gt;&quot;,handler:function(a){var b=DataTiddler.getDataSectionInfo(a.source);if(b&amp;&amp;b.prefixEnd==a.matchStart){a.nextMatch=b.suffixStart}else{a.outputText(a.output,a.matchStart,a.nextMatch)}}});DataTiddler.originalTiddlerChangedFunction=Tiddler.prototype.changed;Tiddler.prototype.changed=DataTiddler.MyTiddlerChangedFunction;Tiddler.prototype.data=function(b,a){return(b)?DataTiddler.getTiddlerDataValue(this,b,a):DataTiddler.getTiddlerDataObject(this)};Tiddler.prototype.setData=function(c,b,a){DataTiddler.setTiddlerDataValue(this,c,b,a)};config.macros.showData={label:&quot;showData&quot;,prompt:&quot;Display the values stored in the data section of the tiddler&quot;};config.macros.showData.handler=function(a,g,h){var c=0;var d=false;if((c&lt;h.length)&amp;&amp;h[c]==&quot;JSON&quot;){c++;d=true}var b=story.findContainingTiddler(a).getAttribute(&quot;tiddler&quot;);if(c&lt;h.length){b=h[c];c++}try{if(d){this.renderDataInJSONFormat(a,b)}else{this.renderDataAsTable(a,b)}}catch(f){this.createErrorElement(a,f)}};config.macros.showData.renderDataInJSONFormat=function(a,b){var c=DataTiddler.getDataText(b);if(c){createTiddlyElement(a,&quot;pre&quot;,null,null,c)}};config.macros.showData.renderDataAsTable=function(a,b){var f=&quot;|!Name|!Value|\n&quot;;var e=DataTiddler.getDataObject(b);if(e){for(var c in e){var d=e[c];f+=&quot;|&quot;+c+&quot;|&quot;+DataTiddler.stringify(d)+&quot;|\n&quot;}}wikify(f,a)};config.macros.showData.createErrorElement=function(a,b){var c=(b.description)?b.description:b.toString();return createTiddlyElement(a,&quot;span&quot;,null,&quot;showDataError&quot;,&quot;&lt;&lt;showData ...&gt;&gt;: &quot;+c)};setStylesheet(&quot;.showDataError{color: #ffffff;background-color: #880000;}&quot;,&quot;showData&quot;)}var JSON={copyright:&quot;(c)2005 JSON.org&quot;,license:&quot;http://www.crockford.com/JSON/license.html&quot;,stringify:function(c){var b=[];function f(a){b[b.length]=a}function d(a){var j,h=undefined,e,g;switch(typeof a){case&quot;object&quot;:if(a){if(a instanceof Array){f(&quot;[&quot;);e=b.length;for(h=0;h&lt;a.length;h+=1){g=a[h];if(typeof g!=&quot;undefined&quot;&amp;&amp;typeof g!=&quot;function&quot;){if(e&lt;b.length){f(&quot;,&quot;)}d(g)}}f(&quot;]&quot;);return}else{if(typeof a.toString!=&quot;undefined&quot;){f(&quot;{&quot;);e=b.length;for(h in a){g=a[h];if(a.hasOwnProperty(h)&amp;&amp;typeof g!=&quot;undefined&quot;&amp;&amp;typeof g!=&quot;function&quot;){if(e&lt;b.length){f(&quot;,&quot;)}d(h);f(&quot;:&quot;);d(g)}}return f(&quot;}&quot;)}}}f(&quot;null&quot;);return;case&quot;number&quot;:f(isFinite(a)?+a:&quot;null&quot;);return;case&quot;string&quot;:e=a.length;f('&quot;');for(h=0;h&lt;e;h+=1){j=a.charAt(h);if(j&gt;=&quot; &quot;){if(j==&quot;\\&quot;||j=='&quot;'){f(&quot;\\&quot;)}f(j)}else{switch(j){case&quot;\b&quot;:f(&quot;\\b&quot;);break;case&quot;\f&quot;:f(&quot;\\f&quot;);break;case&quot;\n&quot;:f(&quot;\\n&quot;);break;case&quot;\r&quot;:f(&quot;\\r&quot;);break;case&quot;\t&quot;:f(&quot;\\t&quot;);break;default:j=j.charCodeAt();f(&quot;\\u00&quot;+Math.floor(j/16).toString(16)+(j%16).toString(16))}}}f('&quot;');return;case&quot;boolean&quot;:f(String(a));return;default:f(&quot;null&quot;);return}}d(c);return b.join(&quot;&quot;)},parse:function(text){var p=/^\s*(([,:{}\[\]])|&quot;(\\.|[^\x00-\x1f&quot;\\])*&quot;|-?\d+(\.\d*)?([eE][+-]?\d+)?|true|false|null)\s*/,token=undefined,operator=undefined;function error(m,t){throw {name:&quot;JSONError&quot;,message:m,text:t||operator||token}}function next(b){if(b&amp;&amp;b!=operator){error(&quot;Expected '&quot;+b+&quot;'&quot;)}if(text){var t=p.exec(text);if(t){if(t[2]){token=null;operator=t[2]}else{operator=null;try{token=eval(t[1])}catch(e){error(&quot;Bad token&quot;,t[1])}}text=text.substring(t[0].length)}else{error(&quot;Unrecognized token&quot;,text)}}else{token=operator=undefined}}function val(){var k,o;switch(operator){case&quot;{&quot;:next(&quot;{&quot;);o={};if(operator!=&quot;}&quot;){for(;;){if(operator||typeof token!=&quot;string&quot;){error(&quot;Missing key&quot;)}k=token;next();next(&quot;:&quot;);o[k]=val();if(operator!=&quot;,&quot;){break}next(&quot;,&quot;)}}next(&quot;}&quot;);return o;case&quot;[&quot;:next(&quot;[&quot;);o=[];if(operator!=&quot;]&quot;){for(;;){o.push(val());if(operator!=&quot;,&quot;){break}next(&quot;,&quot;)}}next(&quot;]&quot;);return o;default:if(operator!==null){error(&quot;Missing value&quot;)}k=token;next();return k}}next();return val()}};DataTiddler.format=&quot;JSON&quot;;DataTiddler.stringify=JSON.stringify;DataTiddler.parse=JSON.parse;
+//%/</pre>
+</div>
+<div title="DatePlugin" creator="YourName" modifier="YourName" created="201504041148" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |Name|[[DatePlugin]]|
 |Source|http://www.TiddlyTools.com/#DatePlugin|
@@ -1261,7 +1366,7 @@ function addRemindersToPopup(p,when,format)
 }
 //}}}</pre>
 </div>
-<div title="DcTableOfContentsPlugin" creator="zedoul" modifier="zedoul" created="201504041209" modified="201504041210" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<div title="DcTableOfContentsPlugin" creator="YourName" modifier="YourName" created="201504041209" modified="201504041210" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |Name|DcTableOfContentsPlugin|
 |Author|[[Doug Compton|http://www.zagware.com/tw/plugins.html#DcTableOfContentsPlugin]]|
@@ -1515,7 +1620,7 @@ window.scrollToHeading = function(title, anchorName, evt) {
 };
 //}}}</pre>
 </div>
-<div title="DisableWikiLinksPlugin" creator="zedoul" modifier="zedoul" created="201504041146" modified="201504041206" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<div title="DisableWikiLinksPlugin" creator="YourName" modifier="YourName" created="201504041146" modified="201504041206" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |Name|DisableWikiLinksPlugin|
 |Source|http://www.TiddlyTools.com/#DisableWikiLinksPlugin|
@@ -1617,7 +1722,7 @@ Tiddler.prototype.changed = function()
 };
 //}}}</pre>
 </div>
-<div title="DiscussPlugin" creator="zedoul" modifier="zedoul" created="201504041159" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<div title="DiscussPlugin" creator="YourName" modifier="YourName" created="201504041159" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |''Name''|DiscussPlugin|
 |''Author''|[[Tobias Beer|http://tobibeer.tiddlyspace.com]]|
@@ -1633,7 +1738,7 @@ Tiddler.prototype.changed = function()
 (function(e){config.macros.discuss={config:{always:false,tplSlider:'Show comments for \'\'&quot;&quot;&quot;%0&quot;&quot;&quot;\'\'  &quot;&quot;&quot;//&quot;&quot;&quot; &lt;&lt;discuss count [[%0]]&gt;&gt;',tipSlider:&quot;Click to show comments for %0...&quot;,url:&quot;&quot;,header:&quot;{{discuss_header{\nLeave a comment at tiddler [[%0]]...\n}}}&quot;,css:{width:&quot;100%&quot;,height:&quot;400px&quot;,border:&quot;0&quot;,marginTop:&quot;1em&quot;}},handler:function(t,n,r,i,s,o){var u,a,f,l=this.config,c=o?o.title:&quot;&quot;,h=s.parseParams(&quot;anon&quot;,null,true),p=getParam(h,&quot;always&quot;,l.always),d=store.getTiddlerText(getParam(h,&quot;template&quot;,&quot;&quot;));if(r[0]==&quot;count&quot;){this.count(r[1],t);return}if(!c||!store.getTiddler(c))return;a=e('&lt;div class=&quot;discuss_panel&quot;/&gt;').attr({url:getParam(h,&quot;url&quot;,l.url)+&quot;/&quot;+encodeURIComponent(c),title:c}).css(&quot;marginTop&quot;,&quot;1em&quot;).appendTo(e(t));if(p){wikify(l.header.format([c]),a[0]);this.render(a[0])}else{u=e(&quot;&lt;div/&gt;&lt;/div&gt;&quot;).attr({&quot;class&quot;:&quot;button discuss_button&quot;,title:l.tipSlider.format([c])}).css({cursor:&quot;pointer&quot;,padding:&quot;0.5em 1%&quot;,width:&quot;98%&quot;}).appendTo(a).click(this.show);wikify((d?d:l.tplSlider).format([c]),u[0])}},render:function(t,n){var r=config.macros.discuss.config,i=e(t).closest(&quot;.discuss_panel&quot;);e(&quot;&lt;iframe/&gt;&quot;).hide().css(r.css).attr({src:i.attr(&quot;url&quot;)}).appendTo(i).slideDown()},show:function(t){console.log(&quot;click&quot;);var n=e(this),r=e(resolveTarget(t||window.event));if(!r.is(&quot;.discuss_button, .discuss_count&quot;)&amp;&amp;r.is(&quot;a&quot;))return true;config.macros.discuss.render(n[0],true);n.remove();return false},count:function(t,n){config.extensions.tiddlyweb.getStatus(function(){var r,i=config.extensions.tiddlyspace.currentSpace.name,s=config.extensions.tiddlyspace.getHost(config.extensions.tiddlyweb.status.server_host,i);e(&quot;&lt;a/&gt;&quot;).attr({&quot;class&quot;:&quot;discuss_count&quot;,&quot;data-disqus-identifier&quot;:t,href:s+&quot;/&quot;+encodeURIComponent(t)+&quot;#disqus_thread&quot;}).appendTo(n);r=document.createElement(&quot;script&quot;);r.async=true;r.type=&quot;text/javascript&quot;;r.src=&quot;http://&quot;+i+&quot;-tiddlyspace.disqus.com/count.js&quot;;console.log(r);(document.getElementsByTagName(&quot;HEAD&quot;)[0]||document.getElementsByTagName(&quot;BODY&quot;)[0]).appendChild(r)})}}})(jQuery)
 // %/</pre>
 </div>
-<div title="FoldHeadingsPlugin" creator="zedoul" modifier="zedoul" created="201504041142" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
+<div title="FoldHeadingsPlugin" creator="YourName" modifier="YourName" created="201504041142" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
 <pre>/***
 |Name|FoldHeadingsPlugin|
 |Source|http://www.TiddlyTools.com/#FoldHeadingsPlugin|
@@ -1747,7 +1852,7 @@ Story.prototype.scrollToSection=function(title,section) {
 //}}}
 // //&lt;&lt;foldHeadings closed&gt;&gt;</pre>
 </div>
-<div title="FootnotesPlugin" creator="zedoul" modifier="zedoul" created="201504041143" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
+<div title="FootnotesPlugin" creator="YourName" modifier="YourName" created="201504041143" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
 <pre>/***
 |''Name:''|FootnotesPlugin|
 |''Description:''|Create automated tiddler footnotes.|
@@ -1831,13 +1936,14 @@ setStylesheet(
 //!END-PLUGIN-CODE
 // %/</pre>
 </div>
-<div title="GettingStarted" creator="zedoul" modifier="zedoul" created="201504041202" modified="201504041209" alias="" changecount="7">
+<div title="GettingStarted" creator="YourName" modifier="YourName" created="201504041202" modified="201504041212" alias="" changecount="8">
 <pre>To get started with this blank [[TiddlyWiki]], you'll need to modify the following tiddlers:
 * [[SiteTitle]] &amp; [[SiteSubtitle]]: The title and subtitle of the site, as shown above (after saving, they will also appear in the browser title bar)
 * [[MainMenu]]: The menu (usually on the left)
 * [[DefaultTiddlers]]: Contains the names of the tiddlers that you want to appear when the TiddlyWiki is opened
 * [[ViewTemplate]]
 * [[StyleSheet]]
+* [[MainMenu]]
 * [[SideBarTabs]]
 * [[SideBarOptions]]
 * [[PageTemplate]]
@@ -1845,7 +1951,7 @@ setStylesheet(
 You'll also need to enter your username for signing your edits: &lt;&lt;option txtUserName&gt;&gt;
 </pre>
 </div>
-<div title="GotoPlugin" creator="zedoul" modifier="zedoul" created="201504041149" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<div title="GotoPlugin" creator="YourName" modifier="YourName" created="201504041149" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |Name|GotoPlugin|
 |Source|http://www.TiddlyTools.com/#GotoPlugin|
@@ -2043,7 +2149,7 @@ config.macros.gotoTiddler= {
 }
 //}}}</pre>
 </div>
-<div title="HtmlCss" creator="zedoul" modifier="zedoul" created="201504041201" tags="excludeLists excludeSearch" alias="" changecount="1">
+<div title="HtmlCss" creator="YourName" modifier="YourName" created="201504041201" tags="excludeLists excludeSearch" alias="" changecount="1">
 <pre>/*{{{*/
 
 /* hide all unwanted things */
@@ -2065,12 +2171,12 @@ html,
 
 /*}}}*/</pre>
 </div>
-<div title="HtmlJavascript" creator="zedoul" modifier="zedoul" created="201504041200" tags="excludeLists excludeSearch" alias="" changecount="1">
+<div title="HtmlJavascript" creator="YourName" modifier="YourName" created="201504041200" tags="excludeLists excludeSearch" alias="" changecount="1">
 <pre>/bags/common/tiddlers/jquery.js
 http://htmljs.tiddlyspace.com/htmljs-disqus
 </pre>
 </div>
-<div title="ImageSizePlugin" creator="zedoul" modifier="zedoul" created="201504041145" modified="201504041206" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<div title="ImageSizePlugin" creator="YourName" modifier="YourName" created="201504041145" modified="201504041206" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |Name|ImageSizePlugin|
 |Source|http://www.TiddlyTools.com/#ImageSizePlugin|
@@ -2246,7 +2352,7 @@ config.formatterHelpers.addStretchHandlers=function(e,stretchW,stretchH) {
 }
 //}}}</pre>
 </div>
-<div title="InlineJavascriptPlugin" creator="zedoul" modifier="zedoul" created="201504041142" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
+<div title="InlineJavascriptPlugin" creator="YourName" modifier="YourName" created="201504041142" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
 <pre>/***
 |Name|InlineJavascriptPlugin|
 |Source|http://www.TiddlyTools.com/#InlineJavascriptPlugin|
@@ -2347,7 +2453,100 @@ if (typeof(wikifyPlainText)==&quot;undefined&quot;) window.wikifyPlainText=funct
 if (typeof($)=='undefined') { function $(id) { return document.getElementById(id.replace(/^#/,'')); } }
 //}}}</pre>
 </div>
-<div title="PageTemplate" creator="zedoul" modifier="zedoul" created="201504041142" modified="201504041205" tags="excludeLists excludeSearch" changecount="2" alias="">
+<div title="InstantTimestampPlugin" creator="YourName" modifier="YourName" created="201504231556" modified="201504231557" tags="ystemConfig excludeLists excludeSearch" alias="" changecount="2">
+<pre>/***
+|Name:|InstantTimestampPlugin|
+|Description:|A handy way to insert timestamps in your tiddler content|
+|Version:|1.0.10a|
+|Date:|27-Jun-2011|
+|Source:|http://mptw.tiddlyspot.com/#InstantTimestampPlugin|
+|Author:|Simon Baird &lt;simon.baird@gmail.com&gt;|
+|License:|http://mptw.tiddlyspot.com/#TheBSDLicense|
+!!Usage
+If you enter {ts} in your tiddler content (without the spaces) it will be replaced with a timestamp when you save the tiddler. Full list of formats:
+* {ts} or {t} -&gt; timestamp
+* {ds} or {d} -&gt; datestamp
+* !ts or !t at start of line -&gt; !!timestamp
+* !ds or !d at start of line -&gt; !!datestamp
+(I added the extra ! since that's how I like it. Remove it from translations below if required)
+!!Notes
+* Change the timeFormat and dateFormat below to suit your preference.
+* See also http://mptw2.tiddlyspot.com/#AutoCorrectPlugin
+* You could invent other translations and add them to the translations array below.
+***/
+//{{{
+
+config.InstantTimestamp = {
+
+  // adjust to suit
+  timeFormat: 'DD MMM YY 0hh:0mm:0ss',
+  dateFormat: 'DD MMM YYYY',
+  yearFormat: 'YYYY',
+
+  translations: [
+    [/^!ts?$/img,  &quot;'!!{{ts{'+now.formatString(config.InstantTimestamp.timeFormat)+'}}}'&quot;],
+    [/^!ds?$/img,  &quot;'!!{{ds{'+now.formatString(config.InstantTimestamp.dateFormat)+'}}}'&quot;],
+
+    [/\{yyyy?\}(?!\}\})/ig,&quot;now.formatString(config.InstantTimestamp.yearFormat)&quot;],
+    [/\{ts?\}(?!\}\})/ig,&quot;now.formatString(config.InstantTimestamp.timeFormat)&quot;],
+    [/\{ds?\}(?!\}\})/ig,&quot;now.formatString(config.InstantTimestamp.dateFormat)&quot;]
+  ],
+
+  excludeTags: [
+    &quot;noAutoCorrect&quot;,
+    &quot;noTimestamp&quot;,
+    &quot;html&quot;,
+    &quot;CSS&quot;,
+    &quot;css&quot;,
+    &quot;systemConfig&quot;,
+    &quot;systemConfigDisabled&quot;,
+    &quot;zsystemConfig&quot;,
+    &quot;Plugins&quot;,
+    &quot;Plugin&quot;,
+    &quot;plugins&quot;,
+    &quot;plugin&quot;,
+    &quot;javascript&quot;,
+    &quot;code&quot;,
+    &quot;systemTheme&quot;,
+    &quot;systemPalette&quot;
+  ],
+
+  excludeTiddlers: [
+    &quot;StyleSheet&quot;,
+    &quot;StyleSheetLayout&quot;,
+    &quot;StyleSheetColors&quot;,
+    &quot;StyleSheetPrint&quot;
+    // more?
+  ]
+
+};
+
+TiddlyWiki.prototype.saveTiddler_mptw_instanttimestamp = TiddlyWiki.prototype.saveTiddler;
+TiddlyWiki.prototype.saveTiddler = function(title,newTitle,newBody,modifier,modified,tags,fields,clearChangeCount,created) {
+
+  tags = tags ? tags : []; // just in case tags is null
+  tags = (typeof(tags) == &quot;string&quot;) ? tags.readBracketedList() : tags;
+  var conf = config.InstantTimestamp;
+
+  if ( !tags.containsAny(conf.excludeTags) &amp;&amp; !conf.excludeTiddlers.contains(newTitle) ) {
+
+    var now = new Date();
+    var trans = conf.translations;
+    for (var i=0;i&lt;trans.length;i++) {
+      newBody = newBody.replace(trans[i][0], eval(trans[i][1]));
+    }
+  }
+
+  // TODO: use apply() instead of naming all args?
+  return this.saveTiddler_mptw_instanttimestamp(title,newTitle,newBody,modifier,modified,tags,fields,clearChangeCount,created);
+}
+
+// you can override these in StyleSheet
+setStylesheet(&quot;.ts,.ds { font-style:italic; }&quot;,&quot;instantTimestampStyles&quot;);
+
+//}}}</pre>
+</div>
+<div title="PageTemplate" creator="YourName" modifier="YourName" created="201504041142" modified="201504041205" tags="excludeLists excludeSearch" changecount="2" alias="">
 <pre>&lt;!--{{{--&gt;
 
 &lt;div id='topMenu' refresh='content' tiddler='MainMenu'&gt;&lt;/div&gt;
@@ -2362,7 +2561,7 @@ if (typeof($)=='undefined') { function $(id) { return document.getElementById(id
 &lt;/div&gt;
 &lt;!--}}}--&gt;</pre>
 </div>
-<div title="PluginMathJax" creator="zedoul" modifier="zedoul" created="201504041145" modified="201504041206" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<div title="PluginMathJax" creator="YourName" modifier="YourName" created="201504041145" modified="201504041206" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |''Name''|PluginMathJax|
 |''Description''|Displays TeX math using MathJax|
@@ -2611,25 +2810,29 @@ if(!version.extensions.PluginMathJax) {
 //}}}
 </pre>
 </div>
-<div title="SideBarTabs" creator="zedoul" modifier="zedoul" created="201504041146" modified="201504041206" tags="excludeLists excludeSearch" alias="" changecount="2">
+<div title="SideBarOptions" creator="YourName" modifier="YourName" created="201504231606" modified="201504231615" alias="" changecount="3">
+<pre>{{button{goto}}}
+&lt;&lt;gotoTiddler&gt;&gt;&lt;&lt;search&gt;&gt;&lt;&lt;closeAll&gt;&gt;&lt;&lt;permaview&gt;&gt;&lt;&lt;newTiddler&gt;&gt;&lt;&lt;newJournal &quot;DD MMM YYYY&quot; &quot;journal&quot;&gt;&gt;&lt;&lt;saveChanges&gt;&gt;&lt;&lt;slider chkSliderOptionsPanel OptionsPanel &quot;options »&quot; &quot;Change TiddlyWiki advanced options&quot;&gt;&gt;</pre>
+</div>
+<div title="SideBarTabs" creator="YourName" modifier="YourName" created="201504041146" modified="201504041206" tags="excludeLists excludeSearch" alias="" changecount="2">
 <pre>{{small{
 	&lt;&lt;tabs txtMainTab
 		None 'TableOfContentsPlugin enhanced listbox' SideBarTabs##Listbox
 		Timeline Timeline TabTimeline
 &gt;&gt;</pre>
 </div>
-<div title="StyleSheet" creator="zedoul" modifier="zedoul" created="201504041140" modified="201504041205" tags="BlackicityTheme excludeLists excludeSearch" changecount="3" alias="">
+<div title="StyleSheet" creator="YourName" modifier="YourName" created="201504041140" modified="201504041205" tags="BlackicityTheme excludeLists excludeSearch" changecount="3" alias="">
 <pre>/*{{{*/
 /*Blackicity Theme for TiddlyWiki*/
 /*Design and CSS by Saq Imtiaz*/
 /*Version 1.0*/
 /*}}}*/
 /*{{{*/
-body{	font-family: nanumgothic,나눔고딕,&quot;맑은 고딕&quot;,&quot;Malgun Gothic&quot;,&quot;Neue Helvetica&quot;, Helvetica, &quot;Lucida Grande&quot;, Verdana, sans-serif;
+body{	font-family: nanumgothic,蔠嬦quot;ဠզquot;,&quot;Malgun Gothic&quot;,&quot;Neue Helvetica&quot;, Helvetica, &quot;Lucida Grande&quot;, Verdana, sans-serif;
 	background-color: #fff;
 	color: #333; font-size:0.9em;}
 
-#topMenu {position:relative; background:#282826; padding:10px; color:#fff;font-family:nanumgothic,나눔고딕,&quot;맑은 고딕&quot;,&quot;Malgun Gothic&quot;,'Lucida Grande', Verdana, Sans-Serif;}
+#topMenu {position:relative; background:#282826; padding:10px; color:#fff;font-family:nanumgothic,蔠嬦quot;ဠզquot;,&quot;Malgun Gothic&quot;,'Lucida Grande', Verdana, Sans-Serif;}
 #topMenu br {display:none;}
 
 #topMenu a{			color: #999;
@@ -2661,7 +2864,7 @@ border-color: #333;
 }
 
 .tiddler .viewer {line-height:1.45em;}
-.title {color:#222; border-bottom:1px solid#222; font-family:nanumgothic,나눔고딕,&quot;맑은 고딕&quot;,&quot;Malgun Gothic&quot;,'Lucida Grande', Verdana, Sans-Serif; font-size:1.6em;}
+.title {color:#222; border-bottom:1px solid#222; font-family:nanumgothic,蔠嬦quot;ဠզquot;,&quot;Malgun Gothic&quot;,'Lucida Grande', Verdana, Sans-Serif; font-size:1.6em;}
 .subtitle, .subtitle a { color: #999999; font-size: .95em;margin:0.2em;}
 .shadow .title{color:#999;}
 
@@ -2867,7 +3070,7 @@ color: #fff;
 .viewer pre {
 border: 1px solid #ccc;
 background: #f5f5f5;
-font-family: 나눔고딕코딩,나눔고딕,&quot;맑은 고딕&quot;,&quot;Malgun Gothic&quot;,Arial, Helvetica, sans-serif;
+font-family: 蔠唩,蔠嬦quot;ဠզquot;,&quot;Malgun Gothic&quot;,Arial, Helvetica, sans-serif;
 }
 
 .viewer code {
@@ -2886,14 +3089,14 @@ border: 1px solid #ccc; margin-top:5px;
 border: 1px solid #ccc;
 }
 
-h1,h2,h3,h4,h5 { color: #282826; background: transparent; padding-bottom:2px; font-family: nanumgothic,나눔고딕,&quot;맑은 고딕&quot;,&quot;Malgun Gothic&quot;,Arial, Helvetica, sans-serif; }
+h1,h2,h3,h4,h5 { color: #282826; background: transparent; padding-bottom:2px; font-family: nanumgothic,蔠嬦quot;ဠզquot;,&quot;Malgun Gothic&quot;,Arial, Helvetica, sans-serif; }
 h1 {font-size:20px;}
 h2 {font-size:18px;}
 h3 {font-size: 16px;}
 h4 {font-size: 14px;}
 /*}}}*/</pre>
 </div>
-<div title="TiddlerAliasPlugin" creator="zedoul" modifier="zedoul" created="201504041144" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
+<div title="TiddlerAliasPlugin" creator="YourName" modifier="YourName" created="201504041144" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
 <pre>/***
 |''Name:''|TiddlerAliasPlugin|
 |''Version:''|1.0.0 BETA 4 (2009-03-30)|
@@ -3116,7 +3319,225 @@ DAMAGE.
 
 //}}}</pre>
 </div>
-<div title="TiddlersBarPlugin" creator="zedoul" modifier="zedoul" created="201504041144" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
+<div title="TiddlerWithParamsPlugin" creator="YourName" modifier="YourName" created="201504231600" tags="systemConfig excludeLists excludeSearch" alias="" changecount="1">
+<pre>/***
+|''Name:''|TiddlerWithParamsPlugin|
+|''Version:''|1.0.1 (2006-03-22)|
+|''Source:''|http://tiddlywiki.abego-software.de/#TiddlerWithParamsPlugin|
+|''Author:''|UdoBorkowski (ub [at] abego-software [dot] de)|
+|''Licence:''|[[BSD open source license]]|
+!Description
+
+The TiddlerWithParamsPlugin extends the build-in {{{&lt;&lt;tiddler...&gt;&gt;}}} macro. It replaces placeholders ($1, $2, ...) in the given tiddler by values passed with the macro. Then it inserts the (replaced) text, just like the original {{{&lt;&lt;tiddler...&gt;&gt;}}} macro.
+
+''Syntax:'' 
+|&gt;|{{{&lt;&lt;}}}''tiddler '' //tiddlerName// [//className//] [''asText''] [''with:'' //arguments// ] [''prefix:'' //prefixString//] {{{&gt;&gt;}}}|
+|//tiddlerName//|The name of the tiddler to be included. The tiddler may contain placeholders ($1, $2, ... $9) that will be replaced with the values passed with the macro|
+|//className//|The (CSS) class to be used around the embedded tiddler|
+|''asText''|When defined the (replaced) content of the tiddler is inserted as pure text, i.e. it is not &quot;wikified&quot;.|
+|//arguments//|up to 9 arguments may be passed to the macro, used as the values for the placeholders $1, $2, ... $9 in the referenced template|
+|//prefixString//|By default the placeholders $1, $2, $3,..., $9 are used. But you may change the &quot;prefix&quot; before the placeholder number (&quot;$&quot;) to some other text through the &quot;prefix:&quot; option. This may be necessary when you are using the $n in the tiddler you are referencing (e.g. when you are using regular expressions).|
+|&gt;|~~Syntax formatting: Keywords in ''bold'', optional parts in [...]. ~~|
+
+!Example
+
+The following ''//ProjectTemplate//'' tiddler defines an &quot;Overview&quot; page for a project, that gives access to various &quot;sub-tiddlers&quot; used in the project, that follow a static naming schema (e.g. all Notes for any project are stored in a tiddler called &quot;//projectName// Notes&quot;). $1 holds the name of the Project (e.g. &quot;ForEachTiddler&quot;), $2 holds the type of the published component (e.g. &quot;Plugin&quot;, &quot;Macro&quot;, &quot;Function&quot;).
+{{{
+![[$1Project]] Overview
+* [[$1$2]]
+* [[ToDo|$1 ToDos]]
+* [[Notes|$1 Notes]]
+* [[Examples|$1Examples]]
+* [[Tests|$1 Tests]]
+* [[Open Bugs/CRs|$1 Open Bugs and ChangeRequests]]
+}}}
+
+This template is now used in the ''//ForEachTiddlerProject//'' tiddler:
+{{{
+&lt;&lt;tiddler ProjectTemplate with: ForEachTiddler Plugin&gt;&gt;
+}}}
+
+This results in the following tiddler text for the ''//ForEachTiddlerProject//'' tiddler:
+{{{
+![[ForEachTiddlerProject]] Overview
+* [[ForEachTiddlerPlugin]]
+* [[ToDo|ForEachTiddler ToDos]]
+* [[Notes|ForEachTiddler Notes]]
+* [[Examples|ForEachTiddlerExamples]]
+* [[Tests|ForEachTiddler Tests]]
+* [[Open Bugs/CRs|ForEachTiddler Open Bugs and ChangeRequests]]
+}}}
+
+!Revision history
+* v1.0.0 (2006-01-20)
+** initial version
+* v1.0.1 (2006-03-22)
+** Added 'asText' option
+** Support Safari (Thanks to Elise Springer for reporting the problem)
+!Code
+***/
+//{{{
+//============================================================================
+// TiddlerWithParamsPlugin
+//============================================================================
+
+// Ensure that the Plugin is only installed once.
+//
+if (!version.extensions.TiddlerWithParamsPlugin) {
+
+version.extensions.TiddlerWithParamsPlugin = {
+	major: 1, minor: 0, revision: 1, 
+	date: new Date(2006,3,22), 
+	type: 'plugin',
+	source: &quot;http://tiddlywiki.abego-software.de/#TiddlerWithParamsPlugin&quot;
+};
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+var indexInArray = function(array, item) {
+	for (var i = 0; i &lt; array.length; i++) {
+		if (array[i] == item) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+var myEscapeRegExp = function(s)
+{
+	// The original escapeRegExp function does not work with Safari (2.0.3) 
+	// since the $&amp; is not implemented.
+var t = s.replace(/\\/g, &quot;\\\\&quot;);
+	t = t.replace(/\^/g, &quot;\\^&quot;);
+	t = t.replace(/\$/g, &quot;\\$&quot;);
+	t = t.replace(/\*/g, &quot;\\*&quot;);
+	t = t.replace(/\+/g, &quot;\\+&quot;);
+	t = t.replace(/\?/g, &quot;\\?&quot;);
+	t = t.replace(/\(/g, &quot;\\(&quot;);
+	t = t.replace(/\)/g, &quot;\\)&quot;);
+	t = t.replace(/\=/g, &quot;\\=&quot;);
+	t = t.replace(/\!/g, &quot;\\!&quot;);
+	t = t.replace(/\|/g, &quot;\\|&quot;);
+	t = t.replace(/\,/g, &quot;\\,&quot;);
+	t = t.replace(/\{/g, &quot;\\{&quot;);
+	t = t.replace(/\}/g, &quot;\\}&quot;);
+	t = t.replace(/\[/g, &quot;\\[&quot;);
+	t = t.replace(/\]/g, &quot;\\]&quot;);
+	t = t.replace(/\./g, &quot;\\.&quot;);
+
+    return t;
+}
+
+// ---------------------------------------------------------------------------
+// The (hijacked) tiddler Macro Handler 
+// ---------------------------------------------------------------------------
+
+config.macros.tiddler.handler = function(place,macroName,params,wikifier,paramString,tiddler) {
+	
+	var className = null;
+	var argsStart = -1;
+	var doWikify = true;
+
+	var iParams = 1;
+	if (params[iParams] != &quot;asText&quot; &amp;&amp; params[iParams] != &quot;with:&quot;) {
+		className = params[iParams++];
+	}
+	if (params[iParams] == &quot;asText&quot;) {
+		iParams++;
+		doWikify = false;
+	}
+	if (params[iParams] == &quot;with:&quot;) {
+		iParams++;
+		argsStart = iParams;
+	}
+	
+	var wrapper = createTiddlyElement(place,&quot;span&quot;,null,className ? className : null,null);
+	var text = store.getTiddlerText(params[0]);
+	if(text) {
+		// Check for recursion
+		var tiddlerName = params[0];
+		var stack = config.macros.tiddler.tiddlerStack;
+		if (stack.find(tiddlerName) !== null) return;
+
+		if (argsStart &gt;= 0) {
+			// The params between the &quot;with:&quot; and the &quot;prefix:&quot; (or the end) are the arguments,
+			// The param behind the &quot;prefix:&quot; is the prefix before the placeholder numbers.
+			var argsEnd = params.length;
+			var prefix = &quot;$&quot;;
+			var prefixIndex = indexInArray(params, &quot;prefix:&quot;);
+			if (prefixIndex &gt;= argsStart) {
+				argsEnd = prefixIndex;
+				if (prefixIndex &lt; (params.length-1)) {
+					prefix = params[prefixIndex+1];
+				}
+			}
+			// to avoid any &quot;special RE chars&quot; problems with the prefix string escape all chars.
+			prefix = myEscapeRegExp(prefix);
+			
+			var args = params.slice(argsStart, argsEnd);
+			var n = Math.min(args.length, 9);
+			for (var i = 0; i &lt; n; i++) {
+				var value = args[i];
+				
+				var placeholderRE = new RegExp(prefix+(i+1),&quot;mg&quot;);
+				text = text.replace(placeholderRE, value);
+			}
+		}
+		stack.push(tiddlerName);
+		try {
+			if (doWikify) {
+				wikify(text,wrapper,null,store.getTiddler(params[0]));
+			} else {
+				wrapper.appendChild(document.createTextNode(text));
+			}
+		} finally {			
+			stack.pop();
+		}
+	}
+}
+config.macros.tiddler.tiddlerStack = [];
+
+// End of &quot;install only once&quot;
+}
+
+//============================================================================
+// End of TiddlerWithParamsPlugin
+//============================================================================
+//}}}
+/***
+!Licence and Copyright
+Copyright (c) abego Software ~GmbH, 2006 ([[www.abego-software.de|http://www.abego-software.de]])
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or other
+materials provided with the distribution.
+
+Neither the name of abego Software nor the names of its contributors may be
+used to endorse or promote products derived from this software without specific
+prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.
+***/
+</pre>
+</div>
+<div title="TiddlersBarPlugin" creator="YourName" modifier="YourName" created="201504041144" modified="201504041206" tags="systemConfig excludeLists excludeSearch" changecount="2" alias="">
 <pre>/***
 |''Name:''|TiddlersBarPlugin|
 |''Description:''|Provides browser-like tabs to switch between tiddlers.|
@@ -3409,7 +3830,7 @@ config.refreshers.none = function(){return true}
 })(jQuery);
 //}}}</pre>
 </div>
-<div title="ViewTemplate" creator="zedoul" modifier="zedoul" created="201504041203" modified="201504041207" tags="excludeLists excludeSearch" alias="" changecount="3">
+<div title="ViewTemplate" creator="YourName" modifier="YourName" created="201504041203" modified="201504041207" tags="excludeLists excludeSearch" alias="" changecount="3">
 <pre>&lt;!--{{{--&gt;
 &lt;div class='toolbar' role='navigation' macro='toolbar [[ToolbarCommands::ViewToolbar]]'&gt;&lt;/div&gt;
 &lt;div class='title' macro='view title'&gt;&lt;/div&gt;
@@ -3421,7 +3842,7 @@ config.refreshers.none = function(){return true}
 &lt;!--}}}--&gt;
 </pre>
 </div>
-<div title="WikiBar" creator="zedoul" modifier="zedoul" created="201504041147" modified="201504041206" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<div title="WikiBar" creator="YourName" modifier="YourName" created="201504041147" modified="201504041206" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
 |''Name:''|WikiBar|
 |''Version:''|2.0.0 beta3|
