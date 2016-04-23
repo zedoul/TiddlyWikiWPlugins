@@ -1936,8 +1936,12 @@ setStylesheet(
 //!END-PLUGIN-CODE
 // %/</pre>
 </div>
-<div title="GettingStarted" creator="YourName" modifier="YourName" created="201504041202" modified="201504041212" alias="" changecount="8">
-<pre>To get started with this blank [[TiddlyWiki]], you'll need to modify the following tiddlers:
+<div title="GettingStarted" creator="YourName" modifier="YourName" created="201504041202" modified="201604231356" alias="" changecount="20">
+<pre>{{tw_ttoc{}}}
+
+! Introduction
+
+To get started with this blank [[TiddlyWiki]], you'll need to modify the following tiddlers:
 * [[SiteTitle]] &amp; [[SiteSubtitle]]: The title and subtitle of the site, as shown above (after saving, they will also appear in the browser title bar)
 * [[MainMenu]]: The menu (usually on the left)
 * [[DefaultTiddlers]]: Contains the names of the tiddlers that you want to appear when the TiddlyWiki is opened
@@ -1948,8 +1952,10 @@ setStylesheet(
 * [[SideBarOptions]]
 * [[PageTemplate]]
 * [[DefaultTiddlers]]
+* [[systemConfig]]
 You'll also need to enter your username for signing your edits: &lt;&lt;option txtUserName&gt;&gt;
-</pre>
+
+&lt;&lt;TiddlerToC&gt;&gt;</pre>
 </div>
 <div title="GotoPlugin" creator="YourName" modifier="YourName" created="201504041149" modified="201504041207" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
 <pre>/***
@@ -2453,7 +2459,7 @@ if (typeof(wikifyPlainText)==&quot;undefined&quot;) window.wikifyPlainText=funct
 if (typeof($)=='undefined') { function $(id) { return document.getElementById(id.replace(/^#/,'')); } }
 //}}}</pre>
 </div>
-<div title="InstantTimestampPlugin" creator="YourName" modifier="YourName" created="201504231556" modified="201504231557" tags="ystemConfig excludeLists excludeSearch" alias="" changecount="2">
+<div title="InstantTimestampPlugin" creator="YourName" modifier="YourName" created="201504231556" modified="201604231346" tags="systemConfig excludeLists excludeSearch" alias="" changecount="3">
 <pre>/***
 |Name:|InstantTimestampPlugin|
 |Description:|A handy way to insert timestamps in your tiddler content|
@@ -2809,6 +2815,272 @@ if(!version.extensions.PluginMathJax) {
 
 //}}}
 </pre>
+</div>
+<div title="SectionLinksPlugin" modifier="YourName" created="201604231350" modified="201604231350" tags="systemConfig excludeLists excludeSearch" alias="" changecount="2">
+<pre>/***
+|Name|SectionLinksPlugin|
+|Source|http://www.TiddlyTools.com/#SectionLinksPlugin|
+|Documentation|http://www.TiddlyTools.com/#SectionLinksPlugin|
+|Version|1.4.2|
+|Author|Eric Shulman|
+|License|http://www.TiddlyTools.com/#LegalStatements|
+|~CoreVersion|2.1|
+|Type|plugin|
+|Description|allow tiddler sections in TiddlyLinks to be used as anchor points|
+This plugin enhances tiddler links so that they can include section references that ''auto-scroll to the indicated section heading'' within a tiddler (i.e., similar to the 'anchor' behavior provided in HTML by {{{&lt;a name=&quot;foo&quot;&gt;}}} and {{{&lt;a href=&quot;#foo&quot;&gt;...&lt;/a&gt;}}}).  The {{{&lt;&lt;tiddler&gt;&gt;}}} macro syntax has also be extended to allow section references without a tiddler name, so that transclusion of //hidden sections from the same tiddler// can be easily accomplished.  The plugin also adds a new macro, &lt;&lt;sectionTOC&gt;&gt; which can auto-generate and embed a 'Table of Contents' outline view into a tiddler to enable quick navigation to sections within that tiddler.
+!!!Usage
+&lt;&lt;&lt;
+!!!!~TiddlyLink syntax
+You can link to a section of a tiddler by adding the &quot;##sectionname&quot; syntax to the tiddlername:
+{{{
+[[SomeTiddler##SomeSection]]
+}}}
+When clicked, the tiddler is displayed and the specified section heading is automatically scrolled into view. If the tiddler title is omitted or the 'here' keyword is used, e.g.,
+{{{
+[[##SomeSection]] or [[here##SomeSection]]&gt;&gt;
+}}}
+then the current containing tiddler is implied by default.
+!!!!HTML anchor syntax
+You can use HTML syntax to create a scrollable 'anchor' location within a tiddler without use of the standard TW section heading syntax:
+{{{
+&lt;html&gt;&lt;a name=&quot;sectionname&quot; /&gt;&lt;/html&gt;
+}}}
+You can then link to that section using the enhanced TiddlyLink syntax as above.
+!!!!{{{&lt;&lt;tiddler&gt;&gt;}}} macro 
+The {{{&lt;&lt;tiddler&gt;&gt;}}} syntax has been extended so that when the tiddler title is omitted or the 'here' keyword is used, e.g.,
+{{{
+&lt;&lt;tiddler ##SomeSection&gt;&gt; or &lt;&lt;tiddler here##SomeSection&gt;&gt;
+}}}
+then the current containing tiddler is implied by default.
+!!!!&quot;&quot;&quot;&lt;&lt;sectionTOC&gt;&gt;&quot;&quot;&quot; macro
+This macro generates a 'Table of Contents' outline-style bullet list with links to all sections within the current tiddler.  Simply place the following macro at the //end of the tiddler content// (i.e., following all section headings).  Important note: //''The {{{&lt;&lt;sectionTOC&gt;&gt;}}} macro must occur at the end of the tiddler in order to locate the rendered section headings that precede it.''//
+{{{
+&lt;&lt;sectionTOC&gt;&gt; or &lt;&lt;sectionTOC className&gt;&gt;
+}}}
+To position the macro's //output// within the tiddler, you must create a special 'target element' that uses a specific classname (default='sectionTOC'), like this:
+{{{
+{{sectionTOC{}}}
+}}}
+When the {{{&lt;&lt;sectionTOC&gt;&gt;}}} macro is rendered, it will find the matching 'sectionTOC'-classed element and writes it's output there.  You can also add the macro and/or target elements directly to the [[ViewTemplate]] definition, so that every tiddler can automatically display the table of contents:
+{{{
+&lt;span class='sectionTOC'&gt;&lt;/span&gt; &lt;!-- target element --&gt;
+...
+&lt;span macro='sectionTOC'&gt;&lt;/span&gt; &lt;!-- must be at end of tiddler --&gt;
+}}}
+&lt;&lt;&lt;
+!!!Configuration
+&lt;&lt;&lt;
+You can change the {{{&lt;&lt;SectionTOC&gt;&gt;}}} output link format by adding the following statement to a tiddler tagged with &lt;&lt;tag systemConfig&gt;&gt;
+{{{
+config.macros.sectionTOC.linkFormat='[[%0|##%0]]';
+}}}
+The default value (shown above) produces a link to each section within the tiddler, using &quot;%0&quot; to insert the section name into the link.  You can add extra formatting to generate additional output to suit your purposes.  For example, if you have EditSectionPlugin installed, you could include a link that invokes that plugin's popup editor directly from each item in the TOC display, like this:
+{{{
+config.macros.sectionTOC.linkFormat='[[%0|##%0]] &lt;&lt;editSection [[##%0]] [[(edit)]]&gt;&gt;';
+}}}
+&lt;&lt;&lt;
+!!!Examples
+&lt;&lt;&lt;
+links to sections defined by ''TW heading syntax'' (e.g, {{{!!!sectionname}}}):{{indent{
+[[SectionLinksPlugin##onClickTiddlerLink]]
+[[##onClickTiddlerLink]] //(current tiddler implied)//}}}
+links to anchors defined by ''HTML syntax'' (e.g., {{{&lt;html&gt;&lt;a href=&quot;anchorname&quot;&gt;&lt;/html&gt;}}}):{{indent{
+[[SectionLinksPlugin##sampleanchorlink]]
+[[##sampleanchorlink]] //(current tiddler implied)//}}}
+&lt;&lt;&lt;
+!!!Revisions
+&lt;&lt;&lt;
+2011.12.21 1.4.2 refactor sectionTOCformat to permit customization
+2011.02.08 1.4.1 in isExternalLink() hijack, strip section references before testing for external link
+2010.08.09 1.4.0 in scrollToSection(), added support for using HTML &lt;a name=&quot;...&quot;&gt; anchor elements
+2009.08.21 1.3.4 added handling to ignore leading/trailing whitespace in section references
+2009.08.21 1.3.3 in createTiddlyLink(), add tiddlyLinkNonExistingSection class if matching section is not found
+2009.08.14 1.3.2 in createTiddlyLink(), don't override core value for ~TiddlyLink attribute
+2009.08.02 1.3.1 in sectionTOC.handler(), trim leading/trailing whitespace from generated section links
+2009.08.01 1.3.0 in scrollToSection(), apply 3-tier section matching (exact, startsWith, contains)
+2009.07.06 1.2.2 fixed displayTiddler() hijack
+2009.07.03 1.2.1 in {{{&lt;&lt;sectionTOC&gt;&gt;}}}, suppress output if target is not found
+2009.06.02 1.2.0 added support for 'here' keyword in {{{[[here##section]]}}} links and {{{&lt;&lt;tiddler here##section&gt;&gt;}}} macro
+2009.04.09 1.1.1 in sectionTOC macro, make target visible when TOC is rendered.
+2009.01.18 1.1.0 added {{{&lt;&lt;sectionTOC&gt;&gt;}}} macro to generate numbered-bullet links to sections of current tiddler
+2009.01.06 1.0.0 converted to stand-alone plugin
+2008.10.14 0.0.0 initial release (as [[CoreTweaks]] #784 - http://trac.tiddlywiki.org/ticket/784)
+&lt;&lt;&lt;
+!!!Code
+***/
+//{{{
+version.extensions.SectionLinksPlugin= {major: 1, minor: 4, revision: 2, date: new Date(2011,12,21)};
+
+Story.prototype.scrollToSection = function(title,section) {
+	if (!title||!section) return; var t=this.getTiddler(title); if (!t) return null;
+	var elems=t.getElementsByTagName('*');
+	var heads=[]; var anchors=[];
+	for (var i=0; i&lt;elems.length; i++)
+		if (['H1','H2','H3','H4','H5'].contains(elems[i].nodeName)) heads.push(elems[i]);
+	for (var i=0; i&lt;elems.length; i++)
+		if (elems[i].nodeName=='A' &amp;&amp; (elems[i].getAttribute('name')||'').length) anchors.push(elems[i]);
+	var found=null;
+	for (var i=0; i&lt;heads.length; i++)
+		if (getPlainText(heads[i]).trim()==section) { found=heads[i]; break; }
+	if (!found) for (var i=0; i&lt;heads.length; i++)
+		if (getPlainText(heads[i]).trim().startsWith(section)) { found=heads[i]; break; }
+	if (!found) for (var i=0; i&lt;heads.length; i++)
+		if (getPlainText(heads[i]).trim().indexOf(section)!=-1) { found=heads[i]; break; }
+	if (!found) for (var i=0; i&lt;anchors.length; i++)
+		if (anchors[i].getAttribute('name')==section) { found=anchors[i]; break; }
+	if (!found) for (var i=0; i&lt;anchors.length; i++)
+		if (anchors[i].getAttribute('name').startsWith(section)) { found=anchors[i]; break; }
+	if (!found) for (var i=0; i&lt;anchors.length; i++)
+		if (anchors[i].getAttribute('name').indexOf(section)!=-1) { found=anchors[i]; break; }
+	if (found) {
+		// if section heading is collapsed, click to expand it - see [[FoldHeadingsPlugin]]
+		if (hasClass(found,'foldable') &amp;&amp; found.nextSibling.style.display=='none') found.onclick();
+		// scroll *after* tiddler animation
+		var delay=config.options.chkAnimate?config.animDuration+100:0;
+		setTimeout('window.scrollTo('+findPosX(found)+','+findPosY(found)+')',delay);
+		return found;
+	}
+}
+//}}}
+/***
+!!!!core hijacks
+***/
+/***
+!!!!!createTiddlyLink
+***/
+//{{{
+// [[tiddlername##section]] and [[##section]]
+if (!window.createTiddlyLink_section)
+	window.createTiddlyLink_section=window.createTiddlyLink;
+window.createTiddlyLink=function(place,title) {
+	var t=story.findContainingTiddler(place); var tid=t?t.getAttribute('tiddler'):'';
+	var parts=title.split(config.textPrimitives.sectionSeparator);
+	var title=parts[0]; var section=parts[1]; if (section) section=section.trim();
+	if (!title.length || title.toLowerCase()=='here') title=tid;  // default=current tiddler
+	arguments[1]=title;
+	var btn=createTiddlyLink_section.apply(this,arguments);
+	if (section) {
+		btn.setAttribute('section',section);
+		if (store.getTiddlerText(title+config.textPrimitives.sectionSeparator+section)===null)
+			addClass(btn,'tiddlyLinkNonExistingSection');
+	}
+	return btn;
+}
+//}}}
+/***
+!!!!!onClickTiddlerLink
+***/
+//{{{
+if (!window.onClickTiddlerLink_section)
+	window.onClickTiddlerLink_section=window.onClickTiddlerLink;
+window.onClickTiddlerLink=function(ev) {
+	var e=ev||window.event;	var target=resolveTarget(e); var title=null;
+	while (target!=null &amp;&amp; title==null) {
+		title=target.getAttribute('tiddlyLink');
+		section=target.getAttribute('section');
+		target=target.parentNode;
+	} 
+	var t=story.findContainingTiddler(target); var tid=t?t.getAttribute('tiddler'):'';
+	if (title!=tid||!section) // avoid excess scrolling for intra-tiddler links
+		onClickTiddlerLink_section.apply(this,arguments);
+	story.scrollToSection(title,section);
+	return false;
+}
+//}}}
+/***
+!!!!! displayTiddler
+***/
+//{{{
+if (!Story.prototype.displayTiddler_section)
+	Story.prototype.displayTiddler_section=Story.prototype.displayTiddler;
+Story.prototype.displayTiddler = function(srcElement,tiddler)
+{
+	var title=(tiddler instanceof Tiddler)?tiddler.title:tiddler;
+	var parts=title.split(config.textPrimitives.sectionSeparator);
+	var title=parts[0]; var section=parts[1]; if (section) section=section.trim();
+	if (!title.length || title.toLowerCase()=='here') {
+		var t=story.findContainingTiddler(place);
+		title=t?t.getAttribute('tiddler'):'';
+	}
+	arguments[1]=title;  // default=current tiddler
+	this.displayTiddler_section.apply(this,arguments);
+	story.scrollToSection(title,section);
+}
+//}}}
+/***
+&lt;html&gt;&lt;a name=&quot;sampleanchorlink&quot; /&gt;&lt;/html&gt;This is a sample ''anchor link'': {{{&lt;html&gt;&lt;a name=&quot;sampleanchorlink&quot; /&gt;&lt;/html&gt;}}}
+!!!!!isExternalLink
+***/
+//{{{
+if (!config.formatterHelpers.isExternalLink_section)
+	config.formatterHelpers.isExternalLink_section=config.formatterHelpers.isExternalLink;
+config.formatterHelpers.isExternalLink=function(link) {  // remove section references before testing
+	var l=link.split(config.textPrimitives.sectionSeparator)[0];
+	return config.formatterHelpers.isExternalLink_section(l);
+}
+//}}}
+/***
+!!!!!tiddler.handler
+***/
+//{{{
+if (!config.macros.tiddler.handler_section)
+	config.macros.tiddler.handler_section=config.macros.tiddler.handler;
+config.macros.tiddler.handler=function(place,macroName,params,wikifier,paramString,tiddler)
+{
+	if (!params[0]) return;
+	var sep=config.textPrimitives.sectionSeparator;
+	var parts=params[0].split(sep); var tid=parts[0]; var sec=parts[1]; if (sec) sec=sec.trim();
+	if ((tid.toLowerCase()=='here'||!tid.length) &amp;&amp; sec) { // fixup for 'here##section' and '##section'
+		var here=story.findContainingTiddler(place)
+		var tid=here?here.getAttribute('tiddler'):tiddler?tiddler.title:'';
+		arguments[2][0]=tid+sep+sec;
+		arguments[4]=paramString.replace(new RegExp('(here)?'+sep+sec),tid+sep+sec);
+	}
+	config.macros.tiddler.handler_section.apply(this,arguments);
+}
+//}}}
+/***
+!!!!sectionTOC macro
+***/
+//{{{
+config.macros.sectionTOC = {
+	targetClass: 'sectionTOC',
+	linkFormat: '[[%0|##%0]]',
+	handler: function(place,macroName,params,wikifier,paramString,tiddler) {
+		var out=[];
+		var targetClass=params[0]||this.targetClass;
+		var t=story.findContainingTiddler(place); if (!t) return;
+		var elems=t.getElementsByTagName('*');
+		var level=5; // topmost heading level
+		for (var i=0; i&lt;elems.length; i++) {
+			var txt=getPlainText(elems[i]).trim();
+			var link=this.linkFormat.format([txt]);
+			switch(elems[i].nodeName) {
+				case 'H1': out.push('#'+link);		level=1; break;
+				case 'H2': out.push('##'+link);		level=level&lt;2?level:2; break;
+				case 'H3': out.push('###'+link);	level=level&lt;3?level:3; break;
+				case 'H4': out.push('####'+link);	level=level&lt;4?level:4; break;
+				case 'H5': out.push('#####'+link);	level=level&lt;5?level:5; break;
+				default: if (hasClass(elems[i],targetClass)) var target=elems[i];
+			}
+		}
+		// trim excess bullet levels
+		if (level&gt;1) for (var i=0; i&lt;out.length; i++) out[i]=out[i].substr(level-1);
+		// show numbered list
+		if (out.length &amp;&amp; target) {
+			if (target.style.display=='none') target.style.display='block';
+			wikify(out.join('\n'),target);
+		}
+	}
+}
+//}}}
+/***
+!!!Invoke macro
+{{{
+&lt;&lt;sectionTOC&gt;&gt;
+}}}
+***/
+// //&lt;&lt;sectionTOC&gt;&gt;</pre>
 </div>
 <div title="SideBarOptions" creator="YourName" modifier="YourName" created="201504231606" modified="201504231615" alias="" changecount="3">
 <pre>{{button{goto}}}
@@ -3318,6 +3590,270 @@ DAMAGE.
 ***/
 
 //}}}</pre>
+</div>
+<div title="TiddlerToCPlugin" creator="YourName" modifier="YourName" created="201604231345" modified="201604231346" tags="systemConfig excludeLists excludeSearch" alias="" changecount="3">
+<pre>/***
+|Name|TiddlerToCPlugin|
+|Description|Tiddler Table of Contents generator|
+|Author|Julien Coloos|
+|Version|1.1.0|
+|Date|2011-06-12|
+|Status|stable|
+|Source|http://julien.coloos.free.fr/TiddlyWiki-dev/#TiddlerToCPlugin|
+|License|[img[CC BY-SA 3.0|http://i.creativecommons.org/l/by-sa/3.0/80x15.png][http://creativecommons.org/licenses/by-sa/3.0/]]|
+|CoreVersion|2.6|
+|Documentation|http://julien.coloos.free.fr/TiddlyWiki-dev/#TiddlerToCPlugin|
+
+{{tw_ttoc{}}}
+!Description
+This plugin adds the {{{TiddlerToC}}} macro to generate a ~ToC inside a tiddler.
+The generated ~ToC entries list the visible headings found in the tidder, each entry being preceded by a number representing its level and index (e.g.: //1.2.1//). Those numbers link to the corresponding heading.
+Found headings are also altered to display a link back to the ~ToC.
+
+The ~ToC does not reference tiddlers embedded using the {{{tiddler}}}, {{{slider}}} or {{{tabs}}} macro.
+
+The ~ToC is either generated at a given target, or at the beginning of the place it was dropped in. If there are less headings than a given minimum (default being 2), the ~ToC is not displayed.
+The ~ToC title can be clicked to hide/display the ~ToC content.
+
+
+!Notes
+The {{{TiddlerToC}}} macro searches for the HTML headings ({{{h1}}} to {{{h6}}} tags) in the place where it is inserted. Each heading is then converted to a ~ToC entry, preserving inner text format.
+The macro thus has to be inserted at the end of the tiddler: content has been generated and the ~ToC can be populated.
+
+
+!Usage
+The {{{TiddlerToC}}} macro is intended to be inserted at the end of a tiddler.
+
+By default the ~ToC is generated at the beginning of the place the macro was inserted in.
+However a target can be used: if the place contains an element which class is {{{tw_ttoc}}}, this element will be replaced by the ~ToC.
+Such an element can be generated by dropping one of the following inside the tiddler:
+* using a ~TiddlyWiki macro
+{{{
+{{tw_ttoc{}}}
+}}}
+* inserting an explicit HTML tag; the advantage here is that attributes can be specified
+{{{
+&lt;html&gt;&lt;div class=&quot;tw_ttoc&quot; min-entries=&quot;3&quot;/&gt;&lt;/html&gt;
+}}}
+
+
+The macro and/or target element can also be used in [[ViewTemplate]] to be applied to all tiddlers:
+{{{
+...
+&lt;!-- Wikified tiddler content --&gt;
+&lt;div class='viewer' macro='view text wikified'&gt;
+	&lt;!-- Insert ToC right before tiddler content --&gt;
+	&lt;div class='tw_ttoc'&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;!-- ToC generator, to use at the end of the tiddler --&gt;
+&lt;div macro='TiddlerToC min-entries:3'&gt;&lt;/div&gt;
+}}}
+
+!!Parameters
+The following parameters are available:
+* {{{min-entries}}} (optional)
+** minimum number of entries needed to display the ~ToC
+** can be specified as macro parameter, and can be overridden in the target tag (needs explicit HTML tag; see before)
+** default value is {{{2}}}
+
+!!Examples
+Without target:
+{{{
+Tiddler content.
+...
+
+&lt;&lt;TiddlerToC min-entries:3&gt;&gt;
+}}}
+
+With a target:
+{{{
+Beginning of the tiddler.
+...
+
+Where to generate the ToC:
+{{tw_ttoc{}}}
+Or, with a minimum number of entries specified:
+&lt;html&gt;&lt;div class=&quot;tw_ttoc&quot; min-entries=&quot;3&quot;/&gt;&lt;/html&gt;
+
+Tiddler continues ...
+
+&lt;&lt;TiddlerToC min-entries:3&gt;&gt;
+}}}
+
+
+!Styling
+~ToC content uses some classes which style can be overriden using CSS. Those classes are:
+* {{{tw_ttoc}}}: ~ToC
+* {{{tw_ttoc_title}}}: title ({{{Table of Contents}}})
+* {{{tw_ttoc_level}}}: sub-level entry indentation
+* {{{tw_ttoc_entry}}}: entry
+* {{{tw_ttoc_id}}}: entry number
+* {{{tw_ttoc_top}}}: heading link back to the ~ToC
+
+Default style can be found in the code below, and can be overridden in the [[StyleSheet]] tiddler.
+
+
+!Revision History
+!!v1.1.0 (2011-06-12)
+Changes:
+* by default, ~ToC is now displayed only if it contains more than one entry
+
+Enhancements:
+* added a macro parameter to give the minimum number of entries needed to display the ~ToC
+** the parameter can be overridden in the ~ToC target
+
+Fixes:
+* do not list headings that are not //displayed//
+
+!!v1.0.1 (2011-05-29)
+Changes:
+* if there is none, adds a {{{br}}} tag after the ~ToC
+
+!!v1.0.0 (2011-05-28)
+Initial release.
+
+
+!Code
+***/
+//{{{
+if (!config.macros.TiddlerToC) {(function($) {
+
+version.extensions.TiddlerToCPlugin = {major: 1, minor: 1, revision: 0, date: new Date(2011, 6, 12)};
+
+var hTag = /^h([1-6])$/i;
+
+setStylesheet(&quot;.tw_ttoc {background-color: #F8F8F8; padding: 10px; border: 1px #CCCCCC solid;} .tw_ttoc_title {text-align:center; font-weight: bold; margin: 5px 0px 20px 0px;} .tw_ttoc_level {padding-left: 20px;} .tw_ttoc_id {margin-right: 6px;} .tw_ttoc_top {float: right; font-size: 0.5em;}&quot;, &quot;TiddlerToCPlugin&quot;);
+
+function cloneNodeWithEvents(node) {
+	var clone = node.cloneNode(true);
+	var n1 = [node].concat(Array.prototype.slice.call(node.getElementsByTagName('*')));
+	var n2 = [clone].concat(Array.prototype.slice.call(clone.getElementsByTagName('*')));
+
+	for (var i=0 ; i&lt;n1.length ; i++) {
+		for (var j in n1[i]) {
+			if (j.substr(0,2) != &quot;on&quot;) continue;
+			n2[i][j] = n1[i][j];
+		}
+	}
+
+	return clone;
+}
+
+var pl = config.macros.TiddlerToC = {
+handler: function(place, macroName, params, wikifier, paramString, tiddler) {
+	var namedParams = paramString.parseParams(null, null, true), paramMinEntries = getParam(namedParams, &quot;min-entries&quot;), minEntries = paramMinEntries ? parseInt(paramMinEntries) : 2;
+
+	if ($(place).hasClass(&quot;viewer&quot;) || $(place).parents(&quot;.viewer&quot;).size()) pl.generate(place, minEntries);
+	else {
+		/* the macro is not used inside a tiddler content but probably in a template */
+		var t = story.findContainingTiddler(place);
+		if (!t) return;
+		pl.generate(t, minEntries);
+	}
+},
+getElements: function(place) {
+	var els = $();
+
+	$(place).children().each(function(i, n) {
+		/* exclude embedded tiddlers */
+		if ($(n).attr(&quot;tiddler&quot;) || $(n).hasClass(&quot;sliderPanel&quot;) || $(n).hasClass(&quot;tabsetWrapper&quot;)) return;
+		/* include headings and ToC target */
+		if (hTag.test(n.tagName) || $(n).is(&quot;.tw_ttoc&quot;)) els = els.add(n);
+		/* recurse */
+		els = els.add(pl.getElements(n));
+	});
+
+	return els;
+},
+generate: function(place, minEntries) {
+	var els = pl.getElements(place);
+
+	/* get ToC target, or insert it as first element */
+	var toc = els.filter(&quot;.tw_ttoc&quot;);
+	if (toc.size()) {
+		if (toc.size() &gt; 1) {
+			/* More than one target; happens when using ViewTemplate while
+			 * tiddler already contains a ToC target. In any case, it is best
+			 * to keep the last one and remove others.
+			 */
+			toc.not(toc.last()).remove();
+			toc = toc.last();
+		}
+		/* check the ToC was not already generated */
+		if (toc[0].toc &amp;&amp; toc[0].toc.generated) return;
+		/* check if the minimum number of entries is overridden */
+		if (toc.attr(&quot;min-entries&quot;)) minEntries = parseInt(toc.attr(&quot;min-entries&quot;));
+		/* rebuild target tag */
+		toc = toc.empty().wrapInner(&quot;&lt;div class='tw_ttoc'/&gt;&quot;).children(&quot;div&quot;).unwrap();
+	}
+	else toc = $(&quot;&lt;div class='tw_ttoc'/&gt;&quot;).prependTo(place);
+
+	var hLevelCurrent = 0, hLevel;
+	var tocInner = $(&quot;&lt;div/&gt;&quot;), listCurrent = tocInner[0], listId = &quot;1&quot;;
+	toc.hide().append($(&quot;&lt;div class='tw_ttoc_title'&gt;&lt;a href='javascript:;'&gt;Table of Contents&lt;/a&gt;&lt;/div&gt;&quot;), tocInner);
+	$(&quot;.tw_ttoc_title a&quot;, toc).click(function() {
+		if (tocInner.is(&quot;:visible&quot;)) tocInner.hide(&quot;fast&quot;);
+		else tocInner.show(&quot;fast&quot;);
+	});
+
+	var headings = $();
+	els.each(function(i, c) {
+		/* check we got a visible heading */
+		var match = hTag.exec(c.tagName);
+		if (!match || !$(c).is(&quot;:visible&quot;)) return;
+		hLevel = parseInt(match[1]);
+
+		/* check the heading level */
+		if (!hLevelCurrent) hLevelCurrent = hLevel;
+		if (hLevel &lt; hLevelCurrent) {
+			/* have to go up */
+			while ((hLevel &lt;= --hLevelCurrent) &amp;&amp; listCurrent.parentNode) {
+				listCurrent = listCurrent.parentNode.parentNode;
+				ids = listId.split(&quot;.&quot;);
+				ids.pop();
+				listId = ids.join(&quot;.&quot;);
+			}
+		}
+		else if (hLevel &gt; hLevelCurrent) {
+			/* have to go down */
+			while (hLevel &gt;= ++hLevelCurrent) {
+				$(listCurrent.lastChild).append(listCurrent = $(&quot;&lt;div class='tw_ttoc_level'/&gt;&quot;)[0]);
+				ids = listId.split(&quot;.&quot;);
+				ids.push(1);
+				listId = ids.join(&quot;.&quot;);
+			}
+		}
+		/* determine this heading index */
+		ids = listId.split(&quot;.&quot;);
+		ids[ids.length-1] = $(listCurrent).children(&quot;div.tw_ttoc_entry&quot;).size() + 1;
+		listId = ids.join(&quot;.&quot;);
+
+		/* clone the heading content to insert it in the ToC */
+		$(cloneNodeWithEvents(c)).wrapInner(&quot;&lt;div class='tw_ttoc_entry'/&gt;&quot;).children(&quot;div&quot;).unwrap().prepend($(&quot;&lt;a class='tw_ttoc_id' href='javascript:;'/&gt;&quot;).html(listId).click({target: c}, function(ev){window.scrollTo(0,findPosY(ev.data.target))})).appendTo(listCurrent);
+
+		headings = headings.add(c);
+
+		hLevelCurrent = hLevel;
+	});
+	toc[0].toc = {generated: true};
+
+	if (headings.size() &gt;= minEntries) {
+		/* display ToC */
+		/* Note: jQuery 'next' does not take into account text nodes */
+		var sibling = toc.show()[0].nextSibling;
+		if (sibling &amp;&amp; (sibling.nodeName != &quot;BR&quot;)) toc.after(&quot;&lt;br/&gt;&quot;);
+
+		/* insert a 'ToC' link in the headings */
+		headings.append($(&quot;&lt;span class='tw_ttoc_top'&gt;&lt;a href='javascript:;' title='Go to Table of Contents'&gt;[ToC]&lt;/a&gt;&lt;/span&gt;&quot;)).find(&quot;.tw_ttoc_top a&quot;).click(function() {window.scrollTo(0,findPosY(toc[0]))});
+	}
+}
+};
+
+})(jQuery);}
+//}}}
+/***
+&lt;&lt;TiddlerToC&gt;&gt;
+***/</pre>
 </div>
 <div title="TiddlerWithParamsPlugin" creator="YourName" modifier="YourName" created="201504231600" tags="systemConfig excludeLists excludeSearch" alias="" changecount="1">
 <pre>/***
@@ -5483,6 +6019,9 @@ addEvent(document, 'click', wikibarColorTool.onDocumentClick);
 addEvent(document, 'click', wikibarPopup.onDocumentClick);
 wikibar_install();
 //}}}</pre>
+</div>
+<div title="systemConfig" modifier="YourName" created="201604231351" modified="201604231351" alias="" changecount="2">
+<pre></pre>
 </div>
 </div>
 <!--POST-STOREAREA-->
